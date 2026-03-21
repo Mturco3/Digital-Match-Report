@@ -8,11 +8,11 @@
 </head>
 <body>
 
-<button id="lang-toggle-btn" class="lang-toggle">IT</button>
+<div class="lang-switch" id="lang-switch" role="group" aria-label="Language switch">
+  <button id="lang-it-btn" class="lang-btn" data-lang="it" type="button">🇮🇹 Italiano</button>
+  <button id="lang-en-btn" class="lang-btn" data-lang="en" type="button">🇬🇧 English</button>
+</div>
 
-<!-- ═══════════════════════════════════════════
-     HOME SCREEN
-═══════════════════════════════════════════ -->
 <div id="home-screen" class="screen active">
   <div class="setup-card home-card">
     <div class="setup-logo">
@@ -28,14 +28,11 @@
       <p id="home-subtitle">Scheda offline</p>
     </div>
 
-    <button class="btn-primary" id="go-new-game-btn">Nuova partita / New game</button>
-    <button class="btn-secondary" id="go-history-btn">Partite salvate / Past games</button>
+    <button class="btn-primary" id="go-new-game-btn">Nuova partita</button>
+    <button class="btn-secondary" id="go-history-btn">Partite salvate</button>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     SETUP SCREEN
-═══════════════════════════════════════════ -->
 <div id="setup-screen" class="screen">
   <div class="setup-card">
     <div class="inline-actions">
@@ -43,119 +40,42 @@
     </div>
 
     <div class="setup-logo">
-      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="24" cy="24" r="22" fill="#1a6b3a"/>
-        <circle cx="24" cy="24" r="18" fill="none" stroke="white" stroke-width="1.5" stroke-dasharray="3 3"/>
-        <circle cx="24" cy="24" r="5" fill="none" stroke="white" stroke-width="1.5"/>
-        <line x1="2" y1="24" x2="46" y2="24" stroke="white" stroke-width="1.5"/>
-        <rect x="2" y="14" width="10" height="20" rx="1" fill="none" stroke="white" stroke-width="1.5"/>
-        <rect x="36" y="14" width="10" height="20" rx="1" fill="none" stroke="white" stroke-width="1.5"/>
-      </svg>
       <h1>Referee Card</h1>
       <p id="setup-subtitle">Scheda gara</p>
     </div>
 
     <div class="form-group">
       <label id="lbl-referee">Arbitro</label>
-      <input type="text" id="inp-referee" placeholder="Full name / Nome completo" />
+      <input type="text" id="inp-referee" placeholder="Nome completo" />
     </div>
     <div class="form-group">
       <label id="lbl-supervisor">Osservatore</label>
-      <input type="text" id="inp-supervisor" placeholder="Full name / Nome completo" />
+      <input type="text" id="inp-supervisor" placeholder="Nome completo" />
     </div>
     <div class="form-row">
       <div class="form-group">
         <label id="lbl-home">Squadra casa</label>
-        <input type="text" id="inp-home" placeholder="Home / Casa" />
+        <input type="text" id="inp-home" placeholder="Casa" />
       </div>
       <div class="form-group">
         <label id="lbl-away">Squadra ospite</label>
-        <input type="text" id="inp-away" placeholder="Away / Trasferta" />
+        <input type="text" id="inp-away" placeholder="Trasferta" />
       </div>
     </div>
     <div class="form-row">
       <div class="form-group">
         <label id="lbl-category">Categoria</label>
-        <select id="inp-category">
-          <option value="">Select / Seleziona</option>
-          <option>Juniores</option>
-          <option>Under 18</option>
-          <option>Under 17</option>
-          <option>Under 16</option>
-          <option>Under 15</option>
-          <option>Under 15</option>
-        </select>
+        <select id="inp-category"></select>
       </div>
       <div class="form-group">
         <label id="lbl-level">Livello</label>
-        <select id="inp-level">
-          <option value="">Select / Seleziona</option>
-          <option>Provinciali</option>
-          <option>Regionali</option>
-          <option>Regionali Elite</option>
-        </select>
+        <select id="inp-level"></select>
       </div>
     </div>
     <button class="btn-primary" id="start-match-btn">Inizia</button>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════
-     MATCH SCREEN
-═══════════════════════════════════════════ -->
-<div id="match-screen" class="screen">
-  <div class="match-header">
-    <div class="match-top-actions">
-      <button class="half-btn" id="go-history-from-match-btn">Partite salvate</button>
-      <button class="half-btn" id="end-game-btn">Fine gara</button>
-    </div>
-    <div class="match-meta" id="match-meta-text">—</div>
-    <div class="scoreboard">
-      <div class="team-name home" id="disp-home">Home</div>
-      <div class="score-display">
-        <div class="score-num" id="score-home">0</div>
-        <div class="score-sep">–</div>
-        <div class="score-num" id="score-away">0</div>
-      </div>
-      <div class="team-name away" id="disp-away">Away</div>
-    </div>
-    <div class="half-bar">
-      <button class="half-btn active" id="btn-1h">1° tempo</button>
-      <span class="half-label" id="half-label">1° tempo</span>
-      <button class="half-btn" id="btn-2h">2° tempo</button>
-    </div>
-  </div>
-
-  <div class="pitch-area">
-    <div class="team-col home">
-      <div class="team-col-header" id="col-home-name">Home</div>
-      <div class="events-list" id="events-home"></div>
-    </div>
-    <div class="team-col away">
-      <div class="team-col-header" id="col-away-name">Away</div>
-      <div class="events-list" id="events-away"></div>
-    </div>
-  </div>
-
-  <!-- Spacer so FAB doesn't cover last event -->
-  <div class="fab-spacer"></div>
-
-  <!-- Floating action buttons -->
-  <div class="fab-container">
-    <div class="fab-group">
-      <button class="fab home-fab" id="home-fab">+</button>
-      <span class="fab-label" id="fab-home-label">Home</span>
-    </div>
-    <div class="fab-group">
-      <button class="fab away-fab" id="away-fab">+</button>
-      <span class="fab-label" id="fab-away-label">Away</span>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════
-     PAST GAMES SCREEN
-═══════════════════════════════════════════ -->
 <div id="history-screen" class="screen">
   <div class="history-wrap">
     <div class="history-head">
@@ -163,101 +83,6 @@
       <h2 id="history-title">Partite salvate</h2>
     </div>
     <div id="history-list" class="history-list"></div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════
-     EVENT MODAL
-═══════════════════════════════════════════ -->
-<div class="modal-overlay" id="event-modal">
-  <div class="modal">
-    <div class="modal-handle"></div>
-    <div class="modal-title" id="modal-title">Aggiungi evento – Home</div>
-
-    <!-- Event type selector -->
-    <div class="event-type-grid">
-      <div class="type-btn selected" data-type="card" id="type-card">
-        <div class="type-icon">🟨</div>
-        <div class="type-label" id="lbl-type-card">Cartellino</div>
-      </div>
-      <div class="type-btn" data-type="goal" id="type-goal">
-        <div class="type-icon">⚽</div>
-        <div class="type-label" id="lbl-type-goal">Goal</div>
-      </div>
-      <div class="type-btn" data-type="sub" id="type-sub">
-        <div class="type-icon">🔄</div>
-        <div class="type-label" id="lbl-type-sub">Sostituzione</div>
-      </div>
-      <div class="type-btn" data-type="addtime" id="type-addtime">
-        <div class="type-icon">⏱</div>
-        <div class="type-label" id="lbl-type-addtime">Recupero</div>
-      </div>
-    </div>
-
-    <div class="section-divider"></div>
-
-    <!-- CARD FIELDS -->
-    <div class="modal-fields" id="fields-card">
-      <div class="modal-field">
-        <label id="lbl-card-type">Tipo cartellino</label>
-        <div class="card-type-row">
-          <div class="card-type-btn yellow selected" data-card-type="yellow" id="ct-yellow">Giallo</div>
-          <div class="card-type-btn red" data-card-type="red" id="ct-red">Rosso</div>
-        </div>
-      </div>
-      <div class="modal-field">
-        <label>Player (name or #)</label>
-        <input type="text" id="f-card-player" placeholder="e.g. Rossi or #10" />
-      </div>
-      <div class="modal-field">
-        <label>Minute</label>
-        <input type="number" id="f-card-min" placeholder="e.g. 34" min="1" max="120" />
-      </div>
-    </div>
-
-    <!-- GOAL FIELDS -->
-    <div class="modal-fields is-hidden" id="fields-goal">
-      <div class="modal-field">
-        <label>Minute</label>
-        <input type="number" id="f-goal-min" placeholder="e.g. 67" min="1" max="120" />
-      </div>
-    </div>
-
-    <!-- SUBSTITUTION FIELDS -->
-    <div class="modal-fields is-hidden" id="fields-sub">
-      <div class="modal-field">
-        <label>Player out</label>
-        <input type="text" id="f-sub-out" placeholder="Name or #" />
-      </div>
-      <div class="modal-field">
-        <label>Player in</label>
-        <input type="text" id="f-sub-in" placeholder="Name or #" />
-      </div>
-      <div class="modal-field">
-        <label>Minute</label>
-        <input type="number" id="f-sub-min" placeholder="e.g. 55" min="1" max="120" />
-      </div>
-    </div>
-
-    <!-- ADDED TIME FIELDS -->
-    <div class="modal-fields is-hidden" id="fields-addtime">
-      <div class="modal-field">
-        <label>Half</label>
-        <select id="f-at-half">
-          <option value="1">1st half</option>
-          <option value="2">2nd half</option>
-        </select>
-      </div>
-      <div class="modal-field">
-        <label>Minutes added</label>
-        <input type="number" id="f-at-mins" placeholder="e.g. 4" min="0" max="30" />
-      </div>
-    </div>
-
-    <div class="modal-actions">
-      <button class="btn-cancel" id="cancel-event-btn">Annulla</button>
-      <button class="btn-save" id="save-event-btn">Aggiungi evento</button>
-    </div>
   </div>
 </div>
 

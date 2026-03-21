@@ -14,21 +14,52 @@
 
 body { font-family: 'Georgia', serif; background: var(--off-white); color: var(--text); min-height: 100vh; }
 
-.lang-toggle {
+.lang-switch {
   position: fixed;
   top: 12px;
-  right: 12px;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 500;
-  border: 1px solid rgba(255,255,255,0.35);
   background: rgba(15, 66, 37, 0.88);
-  color: var(--white);
+  border: 1px solid rgba(255,255,255,0.25);
   border-radius: 999px;
-  padding: 8px 12px;
+  padding: 3px;
+  display: inline-flex;
+  gap: 3px;
+}
+
+.lang-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 6px 10px;
+  background: transparent;
+  color: rgba(255,255,255,0.85);
   font-size: 11px;
   font-family: 'Helvetica Neue', sans-serif;
-  letter-spacing: 1px;
-  text-transform: uppercase;
+  font-weight: 600;
   cursor: pointer;
+  white-space: nowrap;
+}
+
+.lang-btn.active {
+  background: var(--white);
+  color: var(--green-dark);
+}
+
+.header-lang-switch {
+  display: flex;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.lang-switch.in-header {
+  position: static;
+  transform: none;
+  background: rgba(255,255,255,0.12);
+}
+
+.lang-switch.in-header .lang-btn.active {
+  background: var(--white);
 }
 
 .screen { display: none; min-height: 100vh; flex-direction: column; }
@@ -133,6 +164,12 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
   justify-content: space-between;
   margin-bottom: 10px;
 }
+
+.header-right-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
 .match-meta {
   font-size: 10px; font-family: 'Helvetica Neue', sans-serif;
   text-transform: uppercase; letter-spacing: 2px;
@@ -152,11 +189,6 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
 }
 .score-num { font-size: 28px; font-weight: 700; min-width: 24px; text-align: center; }
 .score-sep { font-size: 20px; color: rgba(255,255,255,0.5); }
-
-.half-bar {
-  display: flex; justify-content: space-between; align-items: center;
-  margin-top: 10px;
-}
 .half-btn {
   background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2);
   color: white; border-radius: 6px; padding: 5px 12px;
@@ -165,7 +197,60 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
   transition: background 0.15s;
 }
 .half-btn.active { background: rgba(255,255,255,0.25); }
-.half-label { font-size: 11px; color: rgba(255,255,255,0.6); font-family: 'Helvetica Neue', sans-serif; }
+
+.general-events-wrap {
+  margin: 10px 10px 0;
+  padding: 8px;
+  background: #eef4ef;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.events-list.general {
+  gap: 5px;
+}
+
+.match-summary-wrap {
+  margin: 10px 10px 0;
+  padding: 10px;
+  background: #eef4ef;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.summary-row {
+  display: grid;
+  grid-template-columns: 1fr 80px;
+  align-items: center;
+  gap: 8px;
+}
+
+.summary-label {
+  font-size: 11px;
+  font-family: 'Helvetica Neue', sans-serif;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--muted);
+}
+
+.summary-input {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 6px 8px;
+  font-size: 14px;
+  text-align: center;
+  background: var(--white);
+}
+
+.total-row strong {
+  font-size: 16px;
+  color: var(--green-dark);
+  text-align: center;
+}
 
 /* PITCH */
 .pitch-area {
@@ -275,6 +360,9 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
 
 .modal-fields { display: flex; flex-direction: column; gap: 10px; margin-bottom: 1rem; }
 .modal-field label { display: block; font-size: 11px; font-family: 'Helvetica Neue', sans-serif; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); margin-bottom: 5px; }
+.shared-half-field {
+  margin-bottom: 1rem;
+}
 .modal-field input, .modal-field select {
   width: 100%; border: 1.5px solid var(--border); border-radius: 8px;
   padding: 10px 12px; font-size: 15px; font-family: 'Georgia', serif;
@@ -313,6 +401,21 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
   font-family: 'Helvetica Neue', sans-serif;
   font-style: italic; text-align: center;
   padding: 20px 0;
+}
+
+.half-divider {
+  margin: 6px 0;
+  border-top: 1px dashed rgba(0,0,0,0.24);
+  padding-top: 6px;
+  font-size: 10px;
+  font-family: 'Helvetica Neue', sans-serif;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.team-col.away .half-divider {
+  text-align: right;
 }
 
 .fab-spacer { height: 90px; }

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Referee Card - Game</title>
+  <link rel="stylesheet" href="referee_scorecard.css" />
+</head>
+<body>
+
+<div id="match-screen" class="screen active">
+  <div class="match-header">
+    <div class="match-top-actions">
+      <button class="half-btn" id="go-history-from-match-btn">Partite salvate</button>
+      <div class="header-right-actions">
+        <button class="half-btn" id="end-game-btn">Fine gara</button>
+      </div>
+    </div>
+    <div class="header-lang-switch">
+      <div class="lang-switch in-header" id="lang-switch" role="group" aria-label="Language switch">
+        <button id="lang-it-btn" class="lang-btn" data-lang="it" type="button">🇮🇹 Italiano</button>
+        <button id="lang-en-btn" class="lang-btn" data-lang="en" type="button">🇬🇧 English</button>
+      </div>
+    </div>
+    <div class="match-meta" id="match-meta-text">—</div>
+    <div class="scoreboard">
+      <div class="team-name home" id="disp-home">Home</div>
+      <div class="score-display">
+        <div class="score-num" id="score-home">0</div>
+        <div class="score-sep">–</div>
+        <div class="score-num" id="score-away">0</div>
+      </div>
+      <div class="team-name away" id="disp-away">Away</div>
+    </div>
+  </div>
+
+  <div class="match-summary-wrap">
+    <div class="summary-row">
+      <label class="summary-label" id="lbl-added-first">Recupero primo tempo</label>
+      <input type="number" min="0" max="30" id="summary-added-first" class="summary-input" />
+    </div>
+    <div class="summary-row">
+      <label class="summary-label" id="lbl-added-second">Recupero secondo tempo</label>
+      <input type="number" min="0" max="30" id="summary-added-second" class="summary-input" />
+    </div>
+    <div class="summary-row total-row">
+      <span class="summary-label" id="lbl-subs-home">Totale cambi casa</span>
+      <strong id="summary-subs-home">0</strong>
+    </div>
+    <div class="summary-row total-row">
+      <span class="summary-label" id="lbl-subs-away">Totale cambi ospiti</span>
+      <strong id="summary-subs-away">0</strong>
+    </div>
+  </div>
+
+  <div class="pitch-area">
+    <div class="team-col home">
+      <div class="team-col-header" id="col-home-name">Home</div>
+      <div class="events-list" id="events-home"></div>
+    </div>
+    <div class="team-col away">
+      <div class="team-col-header" id="col-away-name">Away</div>
+      <div class="events-list" id="events-away"></div>
+    </div>
+  </div>
+
+  <div class="fab-spacer"></div>
+
+  <div class="fab-container">
+    <div class="fab-group">
+      <button class="fab home-fab" id="home-fab">+</button>
+      <span class="fab-label" id="fab-home-label">Home</span>
+    </div>
+    <div class="fab-group">
+      <button class="fab away-fab" id="away-fab">+</button>
+      <span class="fab-label" id="fab-away-label">Away</span>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="event-modal">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modal-title">Aggiungi evento – Home</div>
+
+    <div class="event-type-grid">
+      <div class="type-btn selected" data-type="card" id="type-card">
+        <div class="type-icon">🟨</div>
+        <div class="type-label" id="lbl-type-card">Cartellino</div>
+      </div>
+      <div class="type-btn" data-type="goal" id="type-goal">
+        <div class="type-icon">⚽</div>
+        <div class="type-label" id="lbl-type-goal">Goal</div>
+      </div>
+      <div class="type-btn" data-type="sub" id="type-sub">
+        <div class="type-icon">🔄</div>
+        <div class="type-label" id="lbl-type-sub">Sostituzione</div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <div class="modal-field shared-half-field">
+      <label id="lbl-event-half">Tempo</label>
+      <select id="f-event-half"></select>
+    </div>
+
+    <div class="modal-fields" id="fields-card">
+      <div class="modal-field">
+        <label id="lbl-card-type">Tipo cartellino</label>
+        <div class="card-type-row">
+          <div class="card-type-btn yellow selected" data-card-type="yellow" id="ct-yellow">Giallo</div>
+          <div class="card-type-btn red" data-card-type="red" id="ct-red">Rosso</div>
+        </div>
+      </div>
+      <div class="modal-field">
+        <label id="lbl-card-number">Numero giocatore</label>
+        <input type="text" id="f-card-player" placeholder="es. 10" />
+      </div>
+      <div class="modal-field">
+        <label id="lbl-minute-card">Minuto</label>
+        <input type="number" id="f-card-min" placeholder="es. 34" min="1" max="120" />
+      </div>
+    </div>
+
+    <div class="modal-fields is-hidden" id="fields-goal">
+      <div class="modal-field">
+        <label id="lbl-minute-goal">Minuto</label>
+        <input type="number" id="f-goal-min" placeholder="es. 67" min="1" max="120" />
+      </div>
+    </div>
+
+    <div class="modal-fields is-hidden" id="fields-sub">
+      <div class="modal-field">
+        <label id="lbl-sub-out">Numero uscita</label>
+        <input type="text" id="f-sub-out" placeholder="es. 8" />
+      </div>
+      <div class="modal-field">
+        <label id="lbl-sub-in">Numero entrata</label>
+        <input type="text" id="f-sub-in" placeholder="es. 18" />
+      </div>
+      <div class="modal-field">
+        <label id="lbl-minute-sub">Minuto</label>
+        <input type="number" id="f-sub-min" placeholder="es. 55" min="1" max="120" />
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-cancel" id="cancel-event-btn">Annulla</button>
+      <button class="btn-save" id="save-event-btn">Aggiungi evento</button>
+    </div>
+  </div>
+</div>
+
+<script src="game.js"></script>
+</body>
+</html>
