@@ -4,7 +4,7 @@ const STORAGE_GAME_PREFIX = 'refcard_game_';
 const STORAGE_ACTIVE_GAME_KEY = 'refcard_active_game';
 const LANG_KEY = 'refcard_lang';
 
-const CATEGORY_OPTIONS = ['Juniores', 'Under 18', 'Under 17', 'Under 16', 'Under 15', 'Under 15'];
+const CATEGORY_OPTIONS = ['Juniores', 'Under 18', 'Under 17', 'Under 16', 'Under 15', 'Under 14'];
 const LEVEL_OPTIONS = ['Provinciali', 'Regionali', 'Regionali Elite'];
 
 const TEXT = {

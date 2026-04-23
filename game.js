@@ -37,7 +37,19 @@ const TEXT = {
     addedFirst: 'Recupero primo tempo',
     addedSecond: 'Recupero secondo tempo',
     totalSubsHome: 'Totale cambi casa',
-    totalSubsAway: 'Totale cambi ospiti'
+    totalSubsAway: 'Totale cambi ospiti',
+    exportBtn: 'Esporta',
+    exportTitle: 'Rapporto gara',
+    exportScore: 'Risultato',
+    exportEvents: 'Eventi',
+    exportNoEvents: 'Nessun evento registrato',
+    exportHalf1: '1° Tempo',
+    exportHalf2: '2° Tempo',
+    exportAddedTime: 'Recupero',
+    exportSubs: 'Sostituzioni',
+    exportMinute: 'Min',
+    exportPrint: 'Stampa',
+    exportClose: 'Chiudi'
   },
   en: {
     pastGames: 'Past games',
@@ -71,7 +83,19 @@ const TEXT = {
     addedFirst: 'Added time first half',
     addedSecond: 'Added time second half',
     totalSubsHome: 'Total home subs',
-    totalSubsAway: 'Total away subs'
+    totalSubsAway: 'Total away subs',
+    exportBtn: 'Export',
+    exportTitle: 'Match Report',
+    exportScore: 'Score',
+    exportEvents: 'Events',
+    exportNoEvents: 'No events recorded',
+    exportHalf1: '1st Half',
+    exportHalf2: '2nd Half',
+    exportAddedTime: 'Added time',
+    exportSubs: 'Substitutions',
+    exportMinute: 'Min',
+    exportPrint: 'Print',
+    exportClose: 'Close'
   }
 };
 
@@ -180,6 +204,7 @@ function applyLanguage() {
   document.documentElement.lang = currentLang;
   document.getElementById('go-history-from-match-btn').textContent = tr('pastGames');
   document.getElementById('end-game-btn').textContent = tr('endGame');
+  document.getElementById('export-btn').textContent = tr('exportBtn');
   document.getElementById('lang-it-btn').classList.toggle('active', currentLang === 'it');
   document.getElementById('lang-en-btn').classList.toggle('active', currentLang === 'en');
 
@@ -211,6 +236,11 @@ function applyLanguage() {
     <option value="2">${tr('secondHalf')}</option>
   `;
   halfSelect.value = prev;
+
+  const modal = document.getElementById('event-modal');
+  if (modal && modal.classList.contains('open') && state) {
+    document.getElementById('modal-title').textContent = `${tr('addEvent')} – ${state.currentTeam === 'home' ? state.home : state.away}`;
+  }
 
   renderMatch();
 }
@@ -291,26 +321,26 @@ function saveEvent() {
   const event = { team: state.currentTeam, type: state.currentType, half };
 
   if (event.type === 'card') {
-    const player = document.getElementById('f-card-player').value.trim();
-    const minute = document.getElementById('f-card-min').value.trim();
-    if (!player || !minute) return alert(tr('alertCard'));
-    event.player = player;
+    const playerRaw = parseInt(document.getElementById('f-card-player').value, 10);
+    const minuteRaw = parseInt(document.getElementById('f-card-min').value, 10);
+    if (isNaN(playerRaw) || playerRaw < 1 || playerRaw > 99 || isNaN(minuteRaw) || minuteRaw < 1 || minuteRaw > 120) return alert(tr('alertCard'));
+    event.player = String(playerRaw);
     event.cardType = state.currentCardType;
-    event.minute = parseInt(minute, 10);
+    event.minute = minuteRaw;
   } else if (event.type === 'goal') {
-    const minute = document.getElementById('f-goal-min').value.trim();
-    if (!minute) return alert(tr('alertGoal'));
-    event.minute = parseInt(minute, 10);
+    const minuteRaw = parseInt(document.getElementById('f-goal-min').value, 10);
+    if (isNaN(minuteRaw) || minuteRaw < 1 || minuteRaw > 120) return alert(tr('alertGoal'));
+    event.minute = minuteRaw;
     if (event.team === 'home') state.scoreHome += 1;
     else state.scoreAway += 1;
   } else if (event.type === 'sub') {
-    const outNumber = document.getElementById('f-sub-out').value.trim();
-    const inNumber = document.getElementById('f-sub-in').value.trim();
-    const minute = document.getElementById('f-sub-min').value.trim();
-    if (!outNumber || !inNumber || !minute) return alert(tr('alertSub'));
-    event.playerOut = outNumber;
-    event.playerIn = inNumber;
-    event.minute = parseInt(minute, 10);
+    const outRaw = parseInt(document.getElementById('f-sub-out').value, 10);
+    const inRaw = parseInt(document.getElementById('f-sub-in').value, 10);
+    const minuteRaw = parseInt(document.getElementById('f-sub-min').value, 10);
+    if (isNaN(outRaw) || outRaw < 1 || outRaw > 99 || isNaN(inRaw) || inRaw < 1 || inRaw > 99 || isNaN(minuteRaw) || minuteRaw < 1 || minuteRaw > 120) return alert(tr('alertSub'));
+    event.playerOut = String(outRaw);
+    event.playerIn = String(inRaw);
+    event.minute = minuteRaw;
   }
 
   state.half = half;
@@ -392,6 +422,90 @@ function renderAllEvents() {
   renderEventsForList('events-away', state.events.filter(event => event.team === 'away'));
 }
 
+function exportMatch() {
+  const date = new Date(state.updatedAt).toLocaleString(currentLang === 'it' ? 'it-IT' : 'en-GB');
+  const subsHome = state.events.filter(e => e.type === 'sub' && e.team === 'home').length;
+  const subsAway = state.events.filter(e => e.type === 'sub' && e.team === 'away').length;
+
+  function eventRow(event) {
+    let desc = '';
+    if (event.type === 'card') {
+      desc = `${event.cardType === 'yellow' ? tr('yellowCard') : tr('redCard')} — #${event.player}`;
+    } else if (event.type === 'goal') {
+      desc = tr('goal');
+    } else if (event.type === 'sub') {
+      desc = `↑ #${event.playerIn} / ↓ #${event.playerOut}`;
+    }
+    return `<tr><td>${event.minute}'</td><td>${desc}</td></tr>`;
+  }
+
+  function halfRows(halfNum) {
+    const events = state.events.filter(e => e.half === halfNum);
+    if (!events.length) return `<tr><td colspan="2" style="color:#888;font-style:italic">${tr('exportNoEvents')}</td></tr>`;
+    const homeRows = events.filter(e => e.team === 'home').map(eventRow).join('');
+    const awayRows = events.filter(e => e.team === 'away').map(eventRow).join('');
+    return `
+      <tr class="team-header"><td colspan="2">${state.home}</td></tr>${homeRows}
+      <tr class="team-header"><td colspan="2">${state.away}</td></tr>${awayRows}
+    `;
+  }
+
+  const addedInfo = [
+    state.addedTimeFirst ? `${tr('exportHalf1')}: +${state.addedTimeFirst}'` : '',
+    state.addedTimeSecond ? `${tr('exportHalf2')}: +${state.addedTimeSecond}'` : ''
+  ].filter(Boolean).join(' &nbsp;|&nbsp; ');
+
+  const html = `<!DOCTYPE html><html lang="${currentLang}"><head><meta charset="UTF-8"/>
+  <title>${tr('exportTitle')}</title>
+  <style>
+    body{font-family:'Helvetica Neue',sans-serif;color:#1a1a1a;max-width:600px;margin:40px auto;padding:0 20px}
+    h1{font-size:22px;color:#0f4225;margin-bottom:4px}
+    .meta{font-size:12px;color:#666;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
+    .score-box{background:#0f4225;color:#fff;border-radius:12px;padding:20px;text-align:center;margin-bottom:24px}
+    .score-teams{display:flex;justify-content:space-between;font-size:16px;font-weight:700;margin-bottom:8px}
+    .score-nums{font-size:40px;font-weight:700;letter-spacing:4px}
+    h2{font-size:14px;text-transform:uppercase;letter-spacing:2px;color:#0f4225;margin:20px 0 8px;border-bottom:1px solid #ddd;padding-bottom:4px}
+    table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px}
+    td{padding:6px 8px;border-bottom:1px solid #eee}
+    td:first-child{color:#888;font-style:italic;width:48px;white-space:nowrap}
+    .team-header td{font-weight:700;color:#0f4225;background:#f0f7f3;font-size:12px;text-transform:uppercase;letter-spacing:1px}
+    .added{font-size:12px;color:#666;margin-bottom:16px}
+    .actions{margin-top:32px;display:flex;gap:12px}
+    button{padding:10px 20px;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit}
+    .btn-print{background:#0f4225;color:#fff}
+    .btn-close{background:#eee;color:#333}
+    @media print{.actions{display:none}}
+  </style>
+  </head><body>
+  <h1>${tr('exportTitle')}</h1>
+  <div class="meta">${date}${state.referee && state.referee !== '—' ? ' &nbsp;·&nbsp; ' + tr('refPrefix') + ': ' + state.referee : ''}${state.category && state.category !== '—' ? ' &nbsp;·&nbsp; ' + state.category : ''}</div>
+  <div class="score-box">
+    <div class="score-teams"><span>${state.home}</span><span>${state.away}</span></div>
+    <div class="score-nums">${state.scoreHome} – ${state.scoreAway}</div>
+  </div>
+  ${addedInfo ? `<div class="added">${tr('exportAddedTime')}: ${addedInfo}</div>` : ''}
+  <h2>${tr('exportHalf1')}</h2>
+  <table>${halfRows(1)}</table>
+  <h2>${tr('exportHalf2')}</h2>
+  <table>${halfRows(2)}</table>
+  <h2>${tr('exportSubs')}</h2>
+  <table>
+    <tr><td>${state.home}</td><td>${subsHome}</td></tr>
+    <tr><td>${state.away}</td><td>${subsAway}</td></tr>
+  </table>
+  <div class="actions">
+    <button class="btn-print" onclick="window.print()">${tr('exportPrint')}</button>
+    <button class="btn-close" onclick="window.close()">${tr('exportClose')}</button>
+  </div>
+  </body></html>`;
+
+  const win = window.open('', '_blank');
+  if (win) {
+    win.document.write(html);
+    win.document.close();
+  }
+}
+
 function goHistory() {
   saveState();
   window.location.href = 'referee_scorecard.html#history';
@@ -423,6 +537,7 @@ function bindUI() {
 
   document.getElementById('go-history-from-match-btn').addEventListener('click', goHistory);
   document.getElementById('end-game-btn').addEventListener('click', endGame);
+  document.getElementById('export-btn').addEventListener('click', exportMatch);
 
   document.getElementById('summary-added-first').addEventListener('change', handleSummaryInput);
   document.getElementById('summary-added-second').addEventListener('change', handleSummaryInput);

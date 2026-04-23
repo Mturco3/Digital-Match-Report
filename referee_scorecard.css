@@ -347,7 +347,7 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
 .modal-handle { width: 40px; height: 4px; background: #ddd; border-radius: 2px; margin: 0 auto 1.25rem; }
 .modal-title { font-size: 17px; font-weight: 700; margin-bottom: 1rem; color: var(--green-dark); }
 
-.event-type-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
+.event-type-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; margin-bottom: 1rem; }
 .type-btn {
   border: 2px solid var(--border); border-radius: 10px;
   padding: 14px 8px; text-align: center; cursor: pointer;

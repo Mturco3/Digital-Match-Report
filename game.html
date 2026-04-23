@@ -13,6 +13,7 @@
     <div class="match-top-actions">
       <button class="half-btn" id="go-history-from-match-btn">Partite salvate</button>
       <div class="header-right-actions">
+        <button class="half-btn" id="export-btn">Esporta</button>
         <button class="half-btn" id="end-game-btn">Fine gara</button>
       </div>
     </div>
@@ -115,7 +116,7 @@
       </div>
       <div class="modal-field">
         <label id="lbl-card-number">Numero giocatore</label>
-        <input type="text" id="f-card-player" placeholder="es. 10" />
+        <input type="number" id="f-card-player" placeholder="es. 10" min="1" max="99" />
       </div>
       <div class="modal-field">
         <label id="lbl-minute-card">Minuto</label>
@@ -133,11 +134,11 @@
     <div class="modal-fields is-hidden" id="fields-sub">
       <div class="modal-field">
         <label id="lbl-sub-out">Numero uscita</label>
-        <input type="text" id="f-sub-out" placeholder="es. 8" />
+        <input type="number" id="f-sub-out" placeholder="es. 8" min="1" max="99" />
       </div>
       <div class="modal-field">
         <label id="lbl-sub-in">Numero entrata</label>
-        <input type="text" id="f-sub-in" placeholder="es. 18" />
+        <input type="number" id="f-sub-in" placeholder="es. 18" min="1" max="99" />
       </div>
       <div class="modal-field">
         <label id="lbl-minute-sub">Minuto</label>
