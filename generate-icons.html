@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head><meta charset="UTF-8"><title>Generate Icons</title></head>
+<body>
+<script>
+function drawIcon(size) {
+  const canvas = document.createElement('canvas');
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext('2d');
+  const s = size / 48;
+
+  // Background
+  ctx.fillStyle = '#0f4225';
+  ctx.beginPath();
+  ctx.roundRect(0, 0, size, size, size * 0.18);
+  ctx.fill();
+
+  // Scale and center the SVG pitch drawing
+  ctx.translate(size / 2, size / 2);
+  ctx.scale(s, s);
+  ctx.translate(-24, -24);
+
+  ctx.strokeStyle = 'white';
+  ctx.lineWidth = 1.5;
+
+  // Outer circle
+  ctx.beginPath();
+  ctx.arc(24, 24, 18, 0, Math.PI * 2);
+  ctx.setLineDash([3, 3]);
+  ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Centre circle
+  ctx.beginPath();
+  ctx.arc(24, 24, 5, 0, Math.PI * 2);
+  ctx.stroke();
+
+  // Halfway line
+  ctx.beginPath();
+  ctx.moveTo(2, 24);
+  ctx.lineTo(46, 24);
+  ctx.stroke();
+
+  // Left goal
+  ctx.strokeRect(2, 14, 10, 20);
+
+  // Right goal
+  ctx.strokeRect(36, 14, 10, 20);
+
+  return canvas;
+}
+
+[192, 512].forEach(size => {
+  const canvas = drawIcon(size);
+  const a = document.createElement('a');
+  a.href = canvas.toDataURL('image/png');
+  a.download = `icons/icon-${size}.png`;
+  a.textContent = `Download icon-${size}.png`;
+  a.style = 'display:block;margin:12px;font-family:sans-serif;font-size:16px';
+  document.body.appendChild(a);
+  a.click();
+});
+
+document.body.insertAdjacentHTML('afterbegin', '<p style="font-family:sans-serif;margin:12px">Icons downloaded. You can close this page.</p>');
+</script>
+</body>
+</html>
