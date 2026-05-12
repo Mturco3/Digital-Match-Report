@@ -303,6 +303,18 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
 .event-player { font-weight: 600; font-size: 12px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .event-detail { font-size: 10px; color: var(--muted); margin-top: 1px; }
 .event-min { font-size: 11px; color: var(--muted); flex-shrink: 0; font-style: italic; }
+.event-delete-btn {
+  flex-shrink: 0;
+  background: none;
+  border: none;
+  color: #bbb;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 2px;
+  font-family: 'Helvetica Neue', sans-serif;
+}
+.event-delete-btn:hover { color: var(--card-red); }
 
 /* FAB */
 .fab-container {

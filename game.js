@@ -43,7 +43,8 @@ const TEXT = {
     exportSubs: 'Sostituzioni',
     exportMinute: 'Min',
     exportPrint: 'Stampa',
-    exportClose: 'Chiudi'
+    exportClose: 'Chiudi',
+    confirmDeleteEvent: 'Eliminare questo evento?'
   },
   en: {
     pastGames: 'Past games',
@@ -89,7 +90,8 @@ const TEXT = {
     exportSubs: 'Substitutions',
     exportMinute: 'Min',
     exportPrint: 'Print',
-    exportClose: 'Close'
+    exportClose: 'Close',
+    confirmDeleteEvent: 'Delete this event?'
   }
 };
 
@@ -316,7 +318,7 @@ function saveEvent() {
   closeModal();
 }
 
-function createEventNode(event) {
+function createEventNode(event, originalIndex) {
   const node = document.createElement('div');
   node.className = 'event-item' + (event.team === 'away' ? ' away' : '');
 
@@ -352,30 +354,31 @@ function createEventNode(event) {
       ${detailText ? `<div class="event-detail">${detailText}</div>` : ''}
     </div>
     ${minuteText ? `<div class="event-min">${minuteText}</div>` : ''}
+    <button class="event-delete-btn" data-index="${originalIndex}" aria-label="Delete event">×</button>
   `;
 
   return node;
 }
 
-function renderEventsForList(listId, events) {
+function renderEventsForList(listId, indexedEvents) {
   const list = document.getElementById(listId);
   list.innerHTML = '';
 
-  const firstHalfEvents = events.filter(event => event.half === 1);
-  const secondHalfEvents = events.filter(event => event.half === 2);
+  const firstHalf = indexedEvents.filter(({ event }) => event.half === 1);
+  const secondHalf = indexedEvents.filter(({ event }) => event.half === 2);
 
-  firstHalfEvents.forEach(event => list.appendChild(createEventNode(event)));
+  firstHalf.forEach(({ event, index }) => list.appendChild(createEventNode(event, index)));
 
-  if (firstHalfEvents.length && secondHalfEvents.length) {
+  if (firstHalf.length && secondHalf.length) {
     const divider = document.createElement('div');
     divider.className = 'half-divider';
     divider.textContent = tr('halfDividerSecond');
     list.appendChild(divider);
   }
 
-  secondHalfEvents.forEach(event => list.appendChild(createEventNode(event)));
+  secondHalf.forEach(({ event, index }) => list.appendChild(createEventNode(event, index)));
 
-  if (!firstHalfEvents.length && !secondHalfEvents.length) {
+  if (!firstHalf.length && !secondHalf.length) {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
     empty.textContent = tr('noEvents');
@@ -384,8 +387,22 @@ function renderEventsForList(listId, events) {
 }
 
 function renderAllEvents() {
-  renderEventsForList('events-home', state.events.filter(event => event.team === 'home'));
-  renderEventsForList('events-away', state.events.filter(event => event.team === 'away'));
+  const indexed = state.events.map((event, index) => ({ event, index }));
+  renderEventsForList('events-home', indexed.filter(({ event }) => event.team === 'home'));
+  renderEventsForList('events-away', indexed.filter(({ event }) => event.team === 'away'));
+}
+
+function deleteEvent(index) {
+  if (!confirm(tr('confirmDeleteEvent'))) return;
+  const event = state.events[index];
+  if (!event) return;
+  if (event.type === 'goal') {
+    if (event.team === 'home') state.scoreHome = Math.max(0, state.scoreHome - 1);
+    else state.scoreAway = Math.max(0, state.scoreAway - 1);
+  }
+  state.events.splice(index, 1);
+  saveState();
+  renderMatch();
 }
 
 function exportMatch() {
@@ -524,6 +541,11 @@ function bindUI() {
 
   document.getElementById('event-modal').addEventListener('click', function (event) {
     if (event.target === this) closeModal();
+  });
+
+  document.getElementById('match-screen').addEventListener('click', function (event) {
+    const btn = event.target.closest('.event-delete-btn');
+    if (btn) deleteEvent(parseInt(btn.dataset.index, 10));
   });
 
   window.addEventListener('beforeunload', saveState);
