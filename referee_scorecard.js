@@ -213,18 +213,18 @@ function renderHistoryList() {
   list.innerHTML = records.map(record => {
     const snap = record.snapshot || {};
     const status = record.status === 'completed' ? tr('statusCompleted') : tr('statusInProgress');
-    const details = [snap.category || '—', snap.level || '—', new Date(record.updatedAt).toLocaleString()].join(' · ');
+    const details = escapeHtml([snap.category || '—', snap.level || '—', new Date(record.updatedAt).toLocaleString()].join(' · '));
     return `
       <article class="history-card">
         <div class="history-card-top">
-          <div class="history-teams">${snap.home || 'Home'} vs ${snap.away || 'Away'}</div>
+          <div class="history-teams">${escapeHtml(snap.home || 'Home')} vs ${escapeHtml(snap.away || 'Away')}</div>
           <span class="history-status ${record.status === 'completed' ? 'done' : 'open'}">${status}</span>
         </div>
         <div class="history-meta">${details}</div>
         <div class="history-score">${snap.scoreHome || 0} – ${snap.scoreAway || 0}</div>
         <div class="history-actions">
-          <button class="btn-small btn-open" data-action="open" data-id="${record.id}">${tr('open')}</button>
-          <button class="btn-small btn-delete" data-action="delete" data-id="${record.id}">${tr('delete')}</button>
+          <button class="btn-small btn-open" data-action="open" data-id="${escapeHtml(record.id)}">${tr('open')}</button>
+          <button class="btn-small btn-delete" data-action="delete" data-id="${escapeHtml(record.id)}">${tr('delete')}</button>
         </div>
       </article>
     `;

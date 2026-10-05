@@ -428,8 +428,8 @@ function exportMatch() {
     const homeRows = events.filter(e => e.team === 'home').map(eventRow).join('');
     const awayRows = events.filter(e => e.team === 'away').map(eventRow).join('');
     return `
-      <tr class="team-header"><td colspan="2">${state.home}</td></tr>${homeRows}
-      <tr class="team-header"><td colspan="2">${state.away}</td></tr>${awayRows}
+      <tr class="team-header"><td colspan="2">${escapeHtml(state.home)}</td></tr>${homeRows}
+      <tr class="team-header"><td colspan="2">${escapeHtml(state.away)}</td></tr>${awayRows}
     `;
   }
 
@@ -461,9 +461,9 @@ function exportMatch() {
   </style>
   </head><body>
   <h1>${tr('exportTitle')}</h1>
-  <div class="meta">${date}${state.referee && state.referee !== '—' ? ' &nbsp;·&nbsp; ' + tr('refPrefix') + ': ' + state.referee : ''}${state.category && state.category !== '—' ? ' &nbsp;·&nbsp; ' + state.category : ''}</div>
+  <div class="meta">${date}${state.referee && state.referee !== '—' ? ' &nbsp;·&nbsp; ' + tr('refPrefix') + ': ' + escapeHtml(state.referee) : ''}${state.category && state.category !== '—' ? ' &nbsp;·&nbsp; ' + escapeHtml(state.category) : ''}</div>
   <div class="score-box">
-    <div class="score-teams"><span>${state.home}</span><span>${state.away}</span></div>
+    <div class="score-teams"><span>${escapeHtml(state.home)}</span><span>${escapeHtml(state.away)}</span></div>
     <div class="score-nums">${state.scoreHome} – ${state.scoreAway}</div>
   </div>
   ${addedInfo ? `<div class="added">${tr('exportAddedTime')}: ${addedInfo}</div>` : ''}
@@ -473,8 +473,8 @@ function exportMatch() {
   <table>${halfRows(2)}</table>
   <h2>${tr('exportSubs')}</h2>
   <table>
-    <tr><td>${state.home}</td><td>${subsHome}</td></tr>
-    <tr><td>${state.away}</td><td>${subsAway}</td></tr>
+    <tr><td>${escapeHtml(state.home)}</td><td>${subsHome}</td></tr>
+    <tr><td>${escapeHtml(state.away)}</td><td>${subsAway}</td></tr>
   </table>
   <div class="actions">
     <button class="btn-print" onclick="window.print()">${tr('exportPrint')}</button>

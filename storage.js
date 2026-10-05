@@ -12,6 +12,15 @@ function safeParse(jsonText, fallback) {
   }
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 function getStorageKey(gameId) {
   return STORAGE_GAME_PREFIX + gameId;
 }
