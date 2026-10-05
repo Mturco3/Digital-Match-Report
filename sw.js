@@ -1,15 +1,15 @@
-const CACHE_NAME = 'refcard-v1';
+const CACHE_NAME = 'refcard-v2';
 const ASSETS = [
-  '/Digital-Match-Report/',
-  '/Digital-Match-Report/referee_scorecard.html',
-  '/Digital-Match-Report/game.html',
-  '/Digital-Match-Report/referee_scorecard.css',
-  '/Digital-Match-Report/storage.js',
-  '/Digital-Match-Report/referee_scorecard.js',
-  '/Digital-Match-Report/game.js',
-  '/Digital-Match-Report/manifest.json',
-  '/Digital-Match-Report/icons/icon-192.png',
-  '/Digital-Match-Report/icons/icon-512.png'
+  './',
+  './referee_scorecard.html',
+  './game.html',
+  './referee_scorecard.css',
+  './storage.js',
+  './referee_scorecard.js',
+  './game.js',
+  './manifest.json',
+  './icons/icon-192.png',
+  './icons/icon-512.png'
 ];
 
 self.addEventListener('install', event => {

@@ -2,7 +2,7 @@
   "name": "Referee Card",
   "short_name": "Ref Card",
   "description": "Digital scorecard for football referees",
-  "start_url": "/Digital-Match-Report/",
+  "start_url": "./",
   "display": "standalone",
   "background_color": "#0f4225",
   "theme_color": "#0f4225",
