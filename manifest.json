@@ -1,6 +1,6 @@
 {
-  "name": "Referee Card",
-  "short_name": "Ref Card",
+  "name": "Digital Match Report",
+  "short_name": "Match Report",
   "description": "Digital scorecard for football referees",
   "start_url": "./",
   "display": "standalone",
