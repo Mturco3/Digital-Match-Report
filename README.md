@@ -39,9 +39,10 @@ A static web app with no framework, no build step and no dependencies.
 - User-entered text is HTML-escaped before it is shown in the history list or the printed report.
 
 ```
-referee_scorecard.html / .js   home, match setup and history
-game.html / game.js            live match screen, event form, printable report
-storage.js                     shared storage helpers
+index.html + js/home.js        home, match setup and history
+game.html + js/game.js         live match screen, event form, printable report
+js/storage.js                  shared storage helpers
+css/style.css                  styles
 sw.js, manifest.json           offline cache and install support
 icons/, tools/                 app icons and the page that generates them
 .github/workflows/static.yml   deployment to GitHub Pages
