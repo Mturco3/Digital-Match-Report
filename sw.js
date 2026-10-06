@@ -1,12 +1,13 @@
-const CACHE_NAME = 'refcard-v2';
+const CACHE_NAME = 'refcard-v3';
 const ASSETS = [
   './',
+  './index.html',
   './referee_scorecard.html',
   './game.html',
-  './referee_scorecard.css',
-  './storage.js',
-  './referee_scorecard.js',
-  './game.js',
+  './css/style.css',
+  './js/storage.js',
+  './js/home.js',
+  './js/game.js',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'

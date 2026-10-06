@@ -491,13 +491,13 @@ function exportMatch() {
 
 function goHistory() {
   saveState();
-  window.location.href = 'referee_scorecard.html#history';
+  window.location.href = 'index.html#history';
 }
 
 function endGame() {
   state.status = 'completed';
   saveState();
-  window.location.href = 'referee_scorecard.html#history';
+  window.location.href = 'index.html#history';
 }
 
 function handleSummaryInput(event) {
@@ -555,7 +555,7 @@ function init() {
   state = loadActiveGame();
   if (!state) {
     alert(tr('alertNoGame'));
-    window.location.href = 'referee_scorecard.html';
+    window.location.href = 'index.html';
     return;
   }
 
