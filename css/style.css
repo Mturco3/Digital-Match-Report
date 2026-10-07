@@ -15,10 +15,9 @@
 body { font-family: 'Georgia', serif; background: var(--off-white); color: var(--text); min-height: 100vh; }
 
 .lang-switch {
-  position: fixed;
-  top: 12px;
-  left: 50%;
-  transform: translateX(-50%);
+  position: absolute;
+  top: 10px;
+  right: 12px;
   z-index: 500;
   background: rgba(15, 66, 37, 0.88);
   border: 1px solid rgba(255,255,255,0.25);
@@ -48,13 +47,12 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
 
 .header-lang-switch {
   display: flex;
-  justify-content: center;
-  margin-top: 2px;
+  justify-content: flex-end;
+  margin-bottom: 8px;
 }
 
 .lang-switch.in-header {
   position: static;
-  transform: none;
   background: rgba(255,255,255,0.12);
 }
 
@@ -72,7 +70,7 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
   background: var(--green-dark);
   align-items: center;
   justify-content: flex-start;
-  padding: 2rem 1.5rem;
+  padding: 3.5rem 1.5rem 2rem;
 }
 #home-screen,
 #setup-screen {
@@ -441,7 +439,7 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
   border-radius: 16px;
   padding: 1rem;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.28);
-  max-height: calc(100vh - 4rem);
+  max-height: calc(100vh - 5.5rem);
   overflow-y: auto;
 }
 
