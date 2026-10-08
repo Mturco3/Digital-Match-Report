@@ -1,5 +1,6 @@
 const CATEGORY_OPTIONS = ['Juniores', 'Under 18', 'Under 17', 'Under 16', 'Under 15', 'Under 14'];
 const LEVEL_OPTIONS = ['Provinciali', 'Regionali', 'Regionali Elite'];
+const RECENT_GAMES_COUNT = 3;
 
 const TEXT = {
   it: {
@@ -19,6 +20,8 @@ const TEXT = {
     selectPlaceholder: 'Seleziona',
     start: 'Inizia',
     historyTitle: 'Partite salvate',
+    recentTitle: 'Partite recenti',
+    resume: 'Riprendi',
     noSavedGames: 'Nessuna partita salvata',
     statusCompleted: 'Completata',
     statusInProgress: 'In corso',
@@ -44,6 +47,8 @@ const TEXT = {
     selectPlaceholder: 'Select',
     start: 'Start',
     historyTitle: 'Past games',
+    recentTitle: 'Recent games',
+    resume: 'Resume',
     noSavedGames: 'No saved games yet',
     statusCompleted: 'Completed',
     statusInProgress: 'In progress',
@@ -141,6 +146,8 @@ function applyLanguage() {
   document.getElementById('lbl-level').textContent = tr('lblLevel');
   document.getElementById('start-match-btn').textContent = tr('start');
   document.getElementById('history-title').textContent = tr('historyTitle');
+  document.getElementById('recent-title').textContent = tr('recentTitle');
+  renderRecentList();
 
   document.getElementById('inp-referee').placeholder = tr('placeholderName');
   document.getElementById('inp-supervisor').placeholder = tr('placeholderName');
@@ -231,14 +238,49 @@ function renderHistoryList() {
   }).join('');
 }
 
+function renderRecentList() {
+  const section = document.getElementById('recent-section');
+  const records = getAllGameRecords().slice(0, RECENT_GAMES_COUNT);
+  section.hidden = records.length === 0;
+
+  document.getElementById('recent-list').innerHTML = records.map(record => {
+    const snap = record.snapshot || {};
+    const isDone = record.status === 'completed';
+    const status = isDone ? tr('statusCompleted') : tr('statusInProgress');
+    const action = isDone ? tr('open') : tr('resume');
+    return `
+      <button type="button" class="history-card recent-card" data-id="${escapeHtml(record.id)}">
+        <span class="history-card-top">
+          <span class="history-teams">${escapeHtml(snap.home || 'Home')} vs ${escapeHtml(snap.away || 'Away')}</span>
+          <span class="history-status ${isDone ? 'done' : 'open'}">${status}</span>
+        </span>
+        <span class="history-meta">${escapeHtml(new Date(record.updatedAt).toLocaleString())}</span>
+        <span class="recent-bottom">
+          <span class="history-score">${snap.scoreHome || 0} – ${snap.scoreAway || 0}</span>
+          <span class="recent-action">${action} →</span>
+        </span>
+      </button>
+    `;
+  }).join('');
+}
+
+function openGame(gameId) {
+  localStorage.setItem(STORAGE_ACTIVE_GAME_KEY, gameId);
+  window.location.href = 'game.html';
+}
+
+function handleRecentClick(event) {
+  const card = event.target.closest('.recent-card');
+  if (card) openGame(card.dataset.id);
+}
+
 function handleHistoryClick(event) {
   const action = event.target.dataset.action;
   const id = event.target.dataset.id;
   if (!action || !id) return;
 
   if (action === 'open') {
-    localStorage.setItem(STORAGE_ACTIVE_GAME_KEY, id);
-    window.location.href = 'game.html';
+    openGame(id);
     return;
   }
 
@@ -268,6 +310,7 @@ function bindUI() {
   document.getElementById('back-home-from-history-btn').addEventListener('click', () => switchScreen('home-screen'));
   document.getElementById('start-match-btn').addEventListener('click', startGame);
   document.getElementById('history-list').addEventListener('click', handleHistoryClick);
+  document.getElementById('recent-list').addEventListener('click', handleRecentClick);
 }
 
 function init() {
