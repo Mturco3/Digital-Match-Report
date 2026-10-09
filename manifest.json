@@ -1,7 +1,7 @@
 {
   "name": "Digital Match Report",
   "short_name": "Match Report",
-  "description": "Digital scorecard for football referees",
+  "description": "Mobile-first match report for football referees: log goals, cards and substitutions, then print the summary",
   "start_url": "./",
   "display": "standalone",
   "background_color": "#0f4225",

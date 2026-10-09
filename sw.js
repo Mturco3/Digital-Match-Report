@@ -1,4 +1,4 @@
-const CACHE_NAME = 'refcard-v5';
+const CACHE_NAME = 'match-report-v6';
 const ASSETS = [
   './',
   './index.html',

@@ -1,6 +1,11 @@
 # Private project notes
 Resources/
 
+# Secrets, dependencies and logs
+.env
+node_modules/
+*.log
+
 # OS and editor files
 .DS_Store
 Thumbs.db
