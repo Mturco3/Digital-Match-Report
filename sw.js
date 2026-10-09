@@ -1,4 +1,4 @@
-const CACHE_NAME = 'refcard-v4';
+const CACHE_NAME = 'refcard-v5';
 const ASSETS = [
   './',
   './index.html',
