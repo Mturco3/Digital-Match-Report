@@ -44,7 +44,12 @@ const TEXT = {
     exportMinute: 'Min',
     exportPrint: 'Stampa',
     exportClose: 'Chiudi',
-    confirmDeleteEvent: 'Eliminare questo evento?'
+    confirmDeleteEvent: 'Eliminare questo evento?',
+    warnSecondYellowTitle: 'Seconda ammonizione',
+    warnSecondYellow: "Il #{player} è già stato ammonito ({minute}'). Seconda ammonizione = espulsione.",
+    warnConfirm: 'Conferma e registra il rosso',
+    secondYellowBadge: '2° giallo',
+    redSecondYellow: 'Rosso per doppia ammonizione'
   },
   en: {
     pastGames: 'Past games',
@@ -91,7 +96,12 @@ const TEXT = {
     exportMinute: 'Min',
     exportPrint: 'Print',
     exportClose: 'Close',
-    confirmDeleteEvent: 'Delete this event?'
+    confirmDeleteEvent: 'Delete this event?',
+    warnSecondYellowTitle: 'Second yellow card',
+    warnSecondYellow: "Player #{player} already has a yellow card ({minute}'). A second yellow means a sending-off.",
+    warnConfirm: 'Confirm and record the red card',
+    secondYellowBadge: '2nd yellow',
+    redSecondYellow: 'Red for second yellow'
   }
 };
 
@@ -294,6 +304,69 @@ function closeModal() {
   document.getElementById('event-modal').classList.remove('open');
 }
 
+function eventOrderKey(event, index) {
+  return event.half * 100000 + (Number(event.minute) || 0) * 100 + index;
+}
+
+function yellowEventsFor(team, player) {
+  return state.events
+    .map((event, index) => ({ event, index }))
+    .filter(({ event }) => event.type === 'card' && event.cardType === 'yellow' && event.team === team && event.player === player)
+    .sort((a, b) => eventOrderKey(a.event, a.index) - eventOrderKey(b.event, b.index))
+    .map(({ event }) => event);
+}
+
+function secondYellowEvents() {
+  const second = new Set();
+  const seen = new Set();
+  state.events
+    .map((event, index) => ({ event, index }))
+    .filter(({ event }) => event.type === 'card' && event.cardType === 'yellow')
+    .sort((a, b) => eventOrderKey(a.event, a.index) - eventOrderKey(b.event, b.index))
+    .forEach(({ event }) => {
+      const key = event.team + ':' + event.player;
+      if (seen.has(key)) second.add(event);
+      seen.add(key);
+    });
+  return second;
+}
+
+function hasSecondYellow(team, player) {
+  return yellowEventsFor(team, player).length >= 2;
+}
+
+function commitEvents(events, half) {
+  state.half = half;
+  events.forEach(event => state.events.push(normalizeEvent(event)));
+  saveState();
+  renderMatch();
+  closeModal();
+}
+
+function openSecondYellowWarning(yellowEvent, previousYellow) {
+  state.pendingYellow = yellowEvent;
+  document.getElementById('warn-title').textContent = tr('warnSecondYellowTitle');
+  document.getElementById('warn-text').textContent = tr('warnSecondYellow')
+    .replace('{player}', yellowEvent.player)
+    .replace('{minute}', previousYellow.minute);
+  document.getElementById('warn-confirm-btn').textContent = tr('warnConfirm');
+  document.getElementById('warn-cancel-btn').textContent = tr('cancel');
+  document.getElementById('warn-modal').classList.add('open');
+}
+
+function closeSecondYellowWarning() {
+  state.pendingYellow = null;
+  document.getElementById('warn-modal').classList.remove('open');
+}
+
+function confirmSecondYellow() {
+  const yellow = state.pendingYellow;
+  closeSecondYellowWarning();
+  if (!yellow) return;
+  const red = { ...yellow, cardType: 'red', secondYellow: true };
+  commitEvents([yellow, red], yellow.half);
+}
+
 function saveEvent() {
   const half = parseInt(document.getElementById('f-event-half').value, 10) || 1;
   const event = { team: state.currentTeam, type: state.currentType, half };
@@ -305,6 +378,10 @@ function saveEvent() {
     event.player = String(playerRaw);
     event.cardType = state.currentCardType;
     event.minute = minuteRaw;
+    if (event.cardType === 'yellow') {
+      const previous = yellowEventsFor(event.team, event.player)[0];
+      if (previous) return openSecondYellowWarning(event, previous);
+    }
   } else if (event.type === 'goal') {
     const minuteRaw = parseInt(document.getElementById('f-goal-min').value, 10);
     if (isNaN(minuteRaw) || minuteRaw < 1 || minuteRaw > 120) return alert(tr('alertGoal'));
@@ -321,14 +398,10 @@ function saveEvent() {
     event.minute = minuteRaw;
   }
 
-  state.half = half;
-  state.events.push(normalizeEvent(event));
-  saveState();
-  renderMatch();
-  closeModal();
+  commitEvents([event], half);
 }
 
-function createEventNode(event, originalIndex) {
+function createEventNode(event, originalIndex, secondYellows) {
   const node = document.createElement('div');
   node.className = 'event-item' + (event.team === 'away' ? ' away' : '');
 
@@ -337,6 +410,7 @@ function createEventNode(event, originalIndex) {
   let playerText = '';
   let detailText = '';
   let minuteText = '';
+  let badgeText = '';
 
   if (event.type === 'card') {
     iconClass = event.cardType;
@@ -344,6 +418,12 @@ function createEventNode(event, originalIndex) {
     playerText = '#' + event.player;
     detailText = event.cardType === 'yellow' ? tr('yellowCard') : tr('redCard');
     minuteText = `${event.minute}'`;
+    if (event.cardType === 'yellow' && secondYellows.has(event)) {
+      iconClass += ' second';
+      badgeText = tr('secondYellowBadge');
+    } else if (event.cardType === 'red' && event.secondYellow && hasSecondYellow(event.team, event.player)) {
+      detailText = tr('redSecondYellow');
+    }
   } else if (event.type === 'goal') {
     iconClass = 'goal';
     iconText = '⚽';
@@ -362,6 +442,7 @@ function createEventNode(event, originalIndex) {
     <div class="event-info">
       <div class="event-player">${playerText}</div>
       ${detailText ? `<div class="event-detail">${detailText}</div>` : ''}
+      ${badgeText ? `<div class="event-badge">${badgeText}</div>` : ''}
     </div>
     ${minuteText ? `<div class="event-min">${minuteText}</div>` : ''}
     <button class="event-delete-btn" data-index="${originalIndex}" aria-label="Delete event">×</button>
@@ -370,14 +451,14 @@ function createEventNode(event, originalIndex) {
   return node;
 }
 
-function renderEventsForList(listId, indexedEvents) {
+function renderEventsForList(listId, indexedEvents, secondYellows) {
   const list = document.getElementById(listId);
   list.innerHTML = '';
 
   const firstHalf = indexedEvents.filter(({ event }) => event.half === 1);
   const secondHalf = indexedEvents.filter(({ event }) => event.half === 2);
 
-  firstHalf.forEach(({ event, index }) => list.appendChild(createEventNode(event, index)));
+  firstHalf.forEach(({ event, index }) => list.appendChild(createEventNode(event, index, secondYellows)));
 
   if (firstHalf.length && secondHalf.length) {
     const divider = document.createElement('div');
@@ -386,7 +467,7 @@ function renderEventsForList(listId, indexedEvents) {
     list.appendChild(divider);
   }
 
-  secondHalf.forEach(({ event, index }) => list.appendChild(createEventNode(event, index)));
+  secondHalf.forEach(({ event, index }) => list.appendChild(createEventNode(event, index, secondYellows)));
 
   if (!firstHalf.length && !secondHalf.length) {
     const empty = document.createElement('div');
@@ -398,8 +479,9 @@ function renderEventsForList(listId, indexedEvents) {
 
 function renderAllEvents() {
   const indexed = state.events.map((event, index) => ({ event, index }));
-  renderEventsForList('events-home', indexed.filter(({ event }) => event.team === 'home'));
-  renderEventsForList('events-away', indexed.filter(({ event }) => event.team === 'away'));
+  const secondYellows = secondYellowEvents();
+  renderEventsForList('events-home', indexed.filter(({ event }) => event.team === 'home'), secondYellows);
+  renderEventsForList('events-away', indexed.filter(({ event }) => event.team === 'away'), secondYellows);
 }
 
 function deleteEvent(index) {
@@ -420,10 +502,14 @@ function exportMatch() {
   const subsHome = state.events.filter(e => e.type === 'sub' && e.team === 'home').length;
   const subsAway = state.events.filter(e => e.type === 'sub' && e.team === 'away').length;
 
+  const secondYellows = secondYellowEvents();
+
   function eventRow(event) {
     let desc = '';
     if (event.type === 'card') {
       desc = `${event.cardType === 'yellow' ? tr('yellowCard') : tr('redCard')} — #${event.player}`;
+      if (event.cardType === 'yellow' && secondYellows.has(event)) desc += ` (${tr('secondYellowBadge')})`;
+      else if (event.cardType === 'red' && event.secondYellow && hasSecondYellow(event.team, event.player)) desc += ` (${tr('redSecondYellow')})`;
     } else if (event.type === 'goal') {
       desc = tr('goal');
     } else if (event.type === 'sub') {
@@ -547,6 +633,8 @@ function bindUI() {
   });
 
   document.getElementById('cancel-event-btn').addEventListener('click', closeModal);
+  document.getElementById('warn-confirm-btn').addEventListener('click', confirmSecondYellow);
+  document.getElementById('warn-cancel-btn').addEventListener('click', closeSecondYellowWarning);
   document.getElementById('save-event-btn').addEventListener('click', saveEvent);
 
   document.getElementById('event-modal').addEventListener('click', function (event) {

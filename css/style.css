@@ -297,11 +297,18 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
 .event-icon.yellow { background: var(--card-yellow); color: #7a5a00; }
 .event-icon.red { background: var(--card-red); color: white; }
 .event-icon.goal { background: #1e7a42; color: white; font-size: 13px; }
+.event-icon.yellow.second { background: linear-gradient(135deg, var(--card-yellow) 50%, var(--card-red) 50%); color: white; }
 .event-icon.sub { background: #e8f0fe; color: #1a56c4; }
 .event-icon.addtime { background: #f3e8ff; color: #6b21a8; font-size: 10px; }
 .event-info { flex: 1; min-width: 0; }
 .event-player { font-weight: 600; font-size: 12px; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .event-detail { font-size: 10px; color: var(--muted); margin-top: 1px; }
+.event-badge {
+  display: inline-block; margin-top: 3px; padding: 1px 6px; border-radius: 999px;
+  background: #fdecea; color: #a12622; border: 1px solid #f3b8b4;
+  font-family: 'Helvetica Neue', sans-serif; font-size: 9px; font-weight: 700;
+  letter-spacing: 0.5px; text-transform: uppercase;
+}
 .event-min { font-size: 11px; color: var(--muted); flex-shrink: 0; font-style: italic; }
 .event-delete-btn {
   flex-shrink: 0;
@@ -402,6 +409,18 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
 }
 .btn-save {
   background: var(--green); color: white;
+  border: none; border-radius: 10px; padding: 13px; font-size: 14px;
+  font-family: 'Helvetica Neue', sans-serif; font-weight: 600; cursor: pointer;
+}
+
+.warn-overlay { z-index: 300; }
+.warn-title { color: var(--card-red); }
+.warn-text {
+  margin: 0 0 1.25rem; padding: 12px 14px; border-left: 4px solid var(--card-yellow);
+  background: #fff9e6; border-radius: 6px; font-size: 15px; line-height: 1.4; color: var(--text);
+}
+.btn-danger {
+  background: var(--card-red); color: white;
   border: none; border-radius: 10px; padding: 13px; font-size: 14px;
   font-family: 'Helvetica Neue', sans-serif; font-weight: 600; cursor: pointer;
 }
