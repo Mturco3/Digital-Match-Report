@@ -1,4 +1,3 @@
-const CATEGORY_OPTIONS = ['Juniores', 'Under 18', 'Under 17', 'Under 16', 'Under 15', 'Under 14'];
 const LEVEL_OPTIONS = ['Provinciali', 'Regionali', 'Regionali Elite'];
 const RECENT_GAMES_COUNT = 3;
 
@@ -14,7 +13,8 @@ const TEXT = {
     lblAway: 'Squadra ospite',
     lblCategory: 'Categoria',
     lblLevel: 'Livello',
-    placeholderName: 'Nome completo',
+    placeholderFirstName: 'Nome',
+    placeholderLastName: 'Cognome',
     placeholderHome: 'Casa',
     placeholderAway: 'Trasferta',
     selectPlaceholder: 'Seleziona',
@@ -41,7 +41,8 @@ const TEXT = {
     lblAway: 'Away team',
     lblCategory: 'Category',
     lblLevel: 'Level',
-    placeholderName: 'Full name',
+    placeholderFirstName: 'First name',
+    placeholderLastName: 'Last name',
     placeholderHome: 'Home',
     placeholderAway: 'Away',
     selectPlaceholder: 'Select',
@@ -110,7 +111,7 @@ function switchScreen(screenId) {
   });
 }
 
-function populateSelect(selectId, options) {
+function populateSelect(selectId, options, labelFor) {
   const select = document.getElementById(selectId);
   const prev = select.value;
   select.innerHTML = '';
@@ -123,7 +124,7 @@ function populateSelect(selectId, options) {
   options.forEach(value => {
     const option = document.createElement('option');
     option.value = value;
-    option.textContent = value;
+    option.textContent = labelFor ? labelFor(value) : value;
     select.appendChild(option);
   });
 
@@ -149,14 +150,39 @@ function applyLanguage() {
   document.getElementById('recent-title').textContent = tr('recentTitle');
   renderRecentList();
 
-  document.getElementById('inp-referee').placeholder = tr('placeholderName');
-  document.getElementById('inp-supervisor').placeholder = tr('placeholderName');
+  setNamePlaceholders('referee');
+  setNamePlaceholders('supervisor');
   document.getElementById('inp-home').placeholder = tr('placeholderHome');
   document.getElementById('inp-away').placeholder = tr('placeholderAway');
 
-  populateSelect('inp-category', CATEGORY_OPTIONS);
+  populateSelect('inp-category', CATEGORY_OPTIONS, value => categoryLabel(value, currentLang));
   populateSelect('inp-level', LEVEL_OPTIONS);
+  updateLevelVisibility();
   if (document.getElementById('history-screen').classList.contains('active')) renderHistoryList();
+}
+
+function setNamePlaceholders(prefix) {
+  const first = document.getElementById('inp-' + prefix + '-first');
+  const last = document.getElementById('inp-' + prefix + '-last');
+  first.placeholder = tr('placeholderFirstName');
+  first.setAttribute('aria-label', tr('placeholderFirstName'));
+  last.placeholder = tr('placeholderLastName');
+  last.setAttribute('aria-label', tr('placeholderLastName'));
+}
+
+function updateLevelVisibility() {
+  const category = document.getElementById('inp-category').value;
+  const showLevel = hasLevel(category);
+  document.getElementById('level-group').hidden = !showLevel;
+  document.getElementById('category-row').classList.toggle('single', !showLevel);
+  if (!showLevel) document.getElementById('inp-level').value = '';
+}
+
+function readFormName(prefix) {
+  return {
+    first: document.getElementById('inp-' + prefix + '-first').value.trim(),
+    last: document.getElementById('inp-' + prefix + '-last').value.trim()
+  };
 }
 
 function setLanguage(lang) {
@@ -174,6 +200,11 @@ function buildRecordFromForm() {
     return null;
   }
 
+  const referee = readFormName('referee');
+  const supervisor = readFormName('supervisor');
+  const category = document.getElementById('inp-category').value;
+  const level = hasLevel(category) ? document.getElementById('inp-level').value : '';
+
   const now = Date.now();
   const gameId = generateGameId();
   return {
@@ -183,10 +214,14 @@ function buildRecordFromForm() {
     createdAt: now,
     updatedAt: now,
     snapshot: {
-      referee: document.getElementById('inp-referee').value.trim() || '—',
-      supervisor: document.getElementById('inp-supervisor').value.trim() || '—',
-      category: document.getElementById('inp-category').value || '—',
-      level: document.getElementById('inp-level').value || '—',
+      referee: joinName(referee),
+      supervisor: joinName(supervisor),
+      refereeFirst: referee.first,
+      refereeLast: referee.last,
+      supervisorFirst: supervisor.first,
+      supervisorLast: supervisor.last,
+      category: category || '—',
+      level: level || '—',
       home,
       away,
       scoreHome: 0,
@@ -220,7 +255,11 @@ function renderHistoryList() {
   list.innerHTML = records.map(record => {
     const snap = record.snapshot || {};
     const status = record.status === 'completed' ? tr('statusCompleted') : tr('statusInProgress');
-    const details = escapeHtml([snap.category || '—', snap.level || '—', new Date(record.updatedAt).toLocaleString()].join(' · '));
+    const detailParts = [];
+    if (snap.category && snap.category !== '—') detailParts.push(categoryLabel(snap.category, currentLang));
+    if (snap.level && snap.level !== '—') detailParts.push(snap.level);
+    detailParts.push(new Date(record.updatedAt).toLocaleString());
+    const details = escapeHtml(detailParts.join(' · '));
     return `
       <article class="history-card">
         <div class="history-card-top">
@@ -308,6 +347,7 @@ function bindUI() {
   });
   document.getElementById('back-home-from-setup-btn').addEventListener('click', () => switchScreen('home-screen'));
   document.getElementById('back-home-from-history-btn').addEventListener('click', () => switchScreen('home-screen'));
+  document.getElementById('inp-category').addEventListener('change', updateLevelVisibility);
   document.getElementById('start-match-btn').addEventListener('click', startGame);
   document.getElementById('history-list').addEventListener('click', handleHistoryClick);
   document.getElementById('recent-list').addEventListener('click', handleRecentClick);

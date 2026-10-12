@@ -116,13 +116,19 @@ function loadActiveGame() {
   if (!record || record.version !== STORAGE_VERSION || !record.snapshot) return null;
 
   const snapshot = record.snapshot;
+  const referee = readPersonName(snapshot, 'referee');
+  const supervisor = readPersonName(snapshot, 'supervisor');
   return {
     gameId: record.id,
     status: record.status || 'in-progress',
     createdAt: record.createdAt || Date.now(),
     updatedAt: record.updatedAt || Date.now(),
-    referee: snapshot.referee || '—',
-    supervisor: snapshot.supervisor || '—',
+    referee: joinName(referee),
+    supervisor: joinName(supervisor),
+    refereeFirst: referee.first,
+    refereeLast: referee.last,
+    supervisorFirst: supervisor.first,
+    supervisorLast: supervisor.last,
     category: snapshot.category || '—',
     level: snapshot.level || '—',
     home: snapshot.home || 'Home',
@@ -150,6 +156,10 @@ function saveState() {
     snapshot: {
       referee: state.referee,
       supervisor: state.supervisor,
+      refereeFirst: state.refereeFirst,
+      refereeLast: state.refereeLast,
+      supervisorFirst: state.supervisorFirst,
+      supervisorLast: state.supervisorLast,
       category: state.category,
       level: state.level,
       home: state.home,
@@ -242,7 +252,7 @@ function renderMatch() {
   document.getElementById('score-away').textContent = state.scoreAway;
 
   const parts = [];
-  if (state.category && state.category !== '—') parts.push(state.category);
+  if (state.category && state.category !== '—') parts.push(categoryLabel(state.category, currentLang));
   if (state.level && state.level !== '—') parts.push(state.level);
   if (state.referee && state.referee !== '—') parts.push(`${tr('refPrefix')}: ${state.referee}`);
   document.getElementById('match-meta-text').textContent = parts.join(' · ') || '—';
@@ -461,7 +471,7 @@ function exportMatch() {
   </style>
   </head><body>
   <h1>${tr('exportTitle')}</h1>
-  <div class="meta">${date}${state.referee && state.referee !== '—' ? ' &nbsp;·&nbsp; ' + tr('refPrefix') + ': ' + escapeHtml(state.referee) : ''}${state.category && state.category !== '—' ? ' &nbsp;·&nbsp; ' + escapeHtml(state.category) : ''}</div>
+  <div class="meta">${date}${state.referee && state.referee !== '—' ? ' &nbsp;·&nbsp; ' + tr('refPrefix') + ': ' + escapeHtml(state.referee) : ''}${state.category && state.category !== '—' ? ' &nbsp;·&nbsp; ' + escapeHtml(categoryLabel(state.category, currentLang)) : ''}</div>
   <div class="score-box">
     <div class="score-teams"><span>${escapeHtml(state.home)}</span><span>${escapeHtml(state.away)}</span></div>
     <div class="score-nums">${state.scoreHome} – ${state.scoreAway}</div>

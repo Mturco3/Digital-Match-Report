@@ -56,11 +56,17 @@
 
     <div class="form-group">
       <label id="lbl-referee">Arbitro</label>
-      <input type="text" id="inp-referee" placeholder="Nome completo" />
+      <div class="form-row">
+        <input type="text" id="inp-referee-first" autocomplete="off" />
+        <input type="text" id="inp-referee-last" autocomplete="off" />
+      </div>
     </div>
     <div class="form-group">
       <label id="lbl-supervisor">Osservatore</label>
-      <input type="text" id="inp-supervisor" placeholder="Nome completo" />
+      <div class="form-row">
+        <input type="text" id="inp-supervisor-first" autocomplete="off" />
+        <input type="text" id="inp-supervisor-last" autocomplete="off" />
+      </div>
     </div>
     <div class="form-row">
       <div class="form-group">
@@ -72,12 +78,12 @@
         <input type="text" id="inp-away" placeholder="Trasferta" />
       </div>
     </div>
-    <div class="form-row">
+    <div class="form-row" id="category-row">
       <div class="form-group">
         <label id="lbl-category">Categoria</label>
         <select id="inp-category"></select>
       </div>
-      <div class="form-group">
+      <div class="form-group" id="level-group">
         <label id="lbl-level">Livello</label>
         <select id="inp-level"></select>
       </div>

@@ -40,3 +40,43 @@ function upsertGameInIndex(gameId) {
   index.unshift(gameId);
   setGameIndex(index);
 }
+
+const CATEGORY_OPTIONS = ['Juniores', 'Under 18', 'Under 17', 'Under 16', 'Under 15', 'Under 14', 'Prima Categoria', 'Seconda Categoria', 'Terza Categoria'];
+const CATEGORIES_WITHOUT_LEVEL = ['Prima Categoria', 'Seconda Categoria', 'Terza Categoria'];
+const CATEGORY_LABELS = {
+  en: {
+    'Prima Categoria': 'First Category',
+    'Seconda Categoria': 'Second Category',
+    'Terza Categoria': 'Third Category'
+  }
+};
+
+function categoryLabel(category, lang) {
+  const labels = CATEGORY_LABELS[lang] || {};
+  return labels[category] || category;
+}
+
+function hasLevel(category) {
+  return !CATEGORIES_WITHOUT_LEVEL.includes(category);
+}
+
+function splitFullName(fullName) {
+  const text = String(fullName || '').trim();
+  if (!text || text === '—') return { first: '', last: '' };
+  const space = text.indexOf(' ');
+  if (space === -1) return { first: '', last: text };
+  return { first: text.slice(0, space), last: text.slice(space + 1).trim() };
+}
+
+function joinName(name) {
+  return [name.first, name.last].filter(Boolean).join(' ') || '—';
+}
+
+function readPersonName(snapshot, key) {
+  const first = snapshot[key + 'First'];
+  const last = snapshot[key + 'Last'];
+  if (typeof first === 'string' || typeof last === 'string') {
+    return { first: first || '', last: last || '' };
+  }
+  return splitFullName(snapshot[key]);
+}
