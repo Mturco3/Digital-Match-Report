@@ -135,6 +135,8 @@ function applyLanguage() {
   document.documentElement.lang = currentLang;
   document.getElementById('lang-it-btn').classList.toggle('active', currentLang === 'it');
   document.getElementById('lang-en-btn').classList.toggle('active', currentLang === 'en');
+  document.getElementById('lang-it-btn').setAttribute('aria-pressed', String(currentLang === 'it'));
+  document.getElementById('lang-en-btn').setAttribute('aria-pressed', String(currentLang === 'en'));
   document.getElementById('home-subtitle').textContent = tr('homeSubtitle');
   document.getElementById('go-new-game-btn').textContent = tr('homeNewGame');
   document.getElementById('go-history-btn').textContent = tr('homeHistory');

@@ -38,6 +38,24 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 32px;
+  transition: background 0.15s, color 0.15s;
+}
+
+.lang-btn:focus-visible {
+  outline: 2px solid var(--white);
+  outline-offset: 1px;
+}
+
+.lang-flag {
+  width: 21px;
+  height: 14px;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
+  flex-shrink: 0;
 }
 
 .lang-btn.active {

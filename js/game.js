@@ -195,6 +195,8 @@ function applyLanguage() {
   document.getElementById('export-btn').textContent = tr('exportBtn');
   document.getElementById('lang-it-btn').classList.toggle('active', currentLang === 'it');
   document.getElementById('lang-en-btn').classList.toggle('active', currentLang === 'en');
+  document.getElementById('lang-it-btn').setAttribute('aria-pressed', String(currentLang === 'it'));
+  document.getElementById('lang-en-btn').setAttribute('aria-pressed', String(currentLang === 'en'));
 
   document.getElementById('lbl-added-first').textContent = tr('addedFirst');
   document.getElementById('lbl-added-second').textContent = tr('addedSecond');
