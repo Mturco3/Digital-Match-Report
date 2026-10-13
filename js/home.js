@@ -15,8 +15,12 @@ const TEXT = {
     lblLevel: 'Livello',
     placeholderFirstName: 'Nome',
     placeholderLastName: 'Cognome',
-    placeholderHome: 'Casa',
-    placeholderAway: 'Trasferta',
+    placeholderTeam: 'Cerca o scrivi il nome',
+    lblColor: 'Colore',
+    group: 'Girone',
+    colorTooSimilar: 'Colori troppo simili: scegline uno diverso.',
+    colorAdjusted: 'Colore adattato per distinguere le squadre.',
+    noTeamFound: 'Nessuna squadra trovata: verrà usato il nome inserito.',
     selectPlaceholder: 'Seleziona',
     start: 'Inizia',
     historyTitle: 'Partite salvate',
@@ -43,8 +47,12 @@ const TEXT = {
     lblLevel: 'Level',
     placeholderFirstName: 'First name',
     placeholderLastName: 'Last name',
-    placeholderHome: 'Home',
-    placeholderAway: 'Away',
+    placeholderTeam: 'Search or type a name',
+    lblColor: 'Colour',
+    group: 'Group',
+    colorTooSimilar: 'Colours are too similar: pick a different one.',
+    colorAdjusted: 'Colour adjusted to tell the teams apart.',
+    noTeamFound: 'No team found: the typed name will be used.',
     selectPlaceholder: 'Select',
     start: 'Start',
     historyTitle: 'Past games',
@@ -154,8 +162,7 @@ function applyLanguage() {
 
   setNamePlaceholders('referee');
   setNamePlaceholders('supervisor');
-  document.getElementById('inp-home').placeholder = tr('placeholderHome');
-  document.getElementById('inp-away').placeholder = tr('placeholderAway');
+  applyTeamPickerLanguage();
 
   populateSelect('inp-category', CATEGORY_OPTIONS, value => categoryLabel(value, currentLang));
   populateSelect('inp-level', LEVEL_OPTIONS);
@@ -178,6 +185,7 @@ function updateLevelVisibility() {
   document.getElementById('level-group').hidden = !showLevel;
   document.getElementById('category-row').classList.toggle('single', !showLevel);
   if (!showLevel) document.getElementById('inp-level').value = '';
+  refreshTeamPickers();
 }
 
 function readFormName(prefix) {
@@ -195,8 +203,10 @@ function setLanguage(lang) {
 }
 
 function buildRecordFromForm() {
-  const home = document.getElementById('inp-home').value.trim();
-  const away = document.getElementById('inp-away').value.trim();
+  const homeTeam = teamPickers.home.getValue();
+  const awayTeam = teamPickers.away.getValue();
+  const home = homeTeam.name;
+  const away = awayTeam.name;
   if (!home || !away) {
     alert(tr('alertTeams'));
     return null;
@@ -226,6 +236,12 @@ function buildRecordFromForm() {
       level: level || '—',
       home,
       away,
+      homeColor: homeTeam.color,
+      awayColor: awayTeam.color,
+      homeLogo: homeTeam.logo,
+      awayLogo: awayTeam.logo,
+      homeTeamId: homeTeam.teamId,
+      awayTeamId: awayTeam.teamId,
       scoreHome: 0,
       scoreAway: 0,
       addedTimeFirst: 0,
@@ -350,12 +366,14 @@ function bindUI() {
   document.getElementById('back-home-from-setup-btn').addEventListener('click', () => switchScreen('home-screen'));
   document.getElementById('back-home-from-history-btn').addEventListener('click', () => switchScreen('home-screen'));
   document.getElementById('inp-category').addEventListener('change', updateLevelVisibility);
+  document.getElementById('inp-level').addEventListener('change', refreshTeamPickers);
   document.getElementById('start-match-btn').addEventListener('click', startGame);
   document.getElementById('history-list').addEventListener('click', handleHistoryClick);
   document.getElementById('recent-list').addEventListener('click', handleRecentClick);
 }
 
 function init() {
+  initTeamPickers();
   bindUI();
   applyLanguage();
   initFromHash();

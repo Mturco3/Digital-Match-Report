@@ -68,15 +68,33 @@
         <input type="text" id="inp-supervisor-last" autocomplete="off" />
       </div>
     </div>
-    <div class="form-row">
-      <div class="form-group">
-        <label id="lbl-home">Squadra casa</label>
-        <input type="text" id="inp-home" placeholder="Casa" />
+    <div class="form-group team-field">
+      <label id="lbl-home" for="inp-home">Squadra casa</label>
+      <div class="combo">
+        <span class="combo-crest" id="crest-home"></span>
+        <input type="text" id="inp-home" role="combobox" aria-expanded="false" aria-controls="list-home" aria-autocomplete="list" autocomplete="off" />
+        <ul class="combo-list" id="list-home" role="listbox" hidden></ul>
       </div>
-      <div class="form-group">
-        <label id="lbl-away">Squadra ospite</label>
-        <input type="text" id="inp-away" placeholder="Trasferta" />
+      <div class="color-row">
+        <span class="color-label" id="color-label-home">Colore</span>
+        <div class="swatches" id="swatches-home" role="radiogroup"></div>
+        <input type="color" id="color-home" class="color-input" />
       </div>
+      <p class="color-warning" id="warn-home" role="status" hidden></p>
+    </div>
+    <div class="form-group team-field">
+      <label id="lbl-away" for="inp-away">Squadra ospite</label>
+      <div class="combo">
+        <span class="combo-crest" id="crest-away"></span>
+        <input type="text" id="inp-away" role="combobox" aria-expanded="false" aria-controls="list-away" aria-autocomplete="list" autocomplete="off" />
+        <ul class="combo-list" id="list-away" role="listbox" hidden></ul>
+      </div>
+      <div class="color-row">
+        <span class="color-label" id="color-label-away">Colore</span>
+        <div class="swatches" id="swatches-away" role="radiogroup"></div>
+        <input type="color" id="color-away" class="color-input" />
+      </div>
+      <p class="color-warning" id="warn-away" role="status" hidden></p>
     </div>
     <div class="form-row" id="category-row">
       <div class="form-group">
@@ -103,6 +121,8 @@
 </div>
 
 <script src="js/storage.js"></script>
+<script src="js/teams.js"></script>
+<script src="js/team-picker.js"></script>
 <script src="js/home.js"></script>
 <script>
   if ('serviceWorker' in navigator) {

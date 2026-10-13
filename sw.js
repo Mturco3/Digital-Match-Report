@@ -1,4 +1,4 @@
-const CACHE_NAME = 'match-report-v9';
+const CACHE_NAME = 'match-report-v10';
 const ASSETS = [
   './',
   './index.html',
@@ -6,8 +6,11 @@ const ASSETS = [
   './game.html',
   './css/style.css',
   './js/storage.js',
+  './js/teams.js',
+  './js/team-picker.js',
   './js/home.js',
   './js/game.js',
+  './data/teams.json',
   './manifest.json',
   './icons/icon-192.png',
   './icons/icon-512.png'

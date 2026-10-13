@@ -143,6 +143,12 @@ function loadActiveGame() {
     level: snapshot.level || '—',
     home: snapshot.home || 'Home',
     away: snapshot.away || 'Away',
+    homeColor: isHexColor(snapshot.homeColor) ? snapshot.homeColor : DEFAULT_HOME_COLOR,
+    awayColor: isHexColor(snapshot.awayColor) ? snapshot.awayColor : DEFAULT_AWAY_COLOR,
+    homeLogo: snapshot.homeLogo || null,
+    awayLogo: snapshot.awayLogo || null,
+    homeTeamId: snapshot.homeTeamId || null,
+    awayTeamId: snapshot.awayTeamId || null,
     scoreHome: Number.isFinite(snapshot.scoreHome) ? snapshot.scoreHome : 0,
     scoreAway: Number.isFinite(snapshot.scoreAway) ? snapshot.scoreAway : 0,
     addedTimeFirst: Number.isFinite(snapshot.addedTimeFirst) ? snapshot.addedTimeFirst : 0,
@@ -174,6 +180,12 @@ function saveState() {
       level: state.level,
       home: state.home,
       away: state.away,
+      homeColor: state.homeColor,
+      awayColor: state.awayColor,
+      homeLogo: state.homeLogo,
+      awayLogo: state.awayLogo,
+      homeTeamId: state.homeTeamId,
+      awayTeamId: state.awayTeamId,
       scoreHome: state.scoreHome,
       scoreAway: state.scoreAway,
       addedTimeFirst: state.addedTimeFirst,
@@ -259,6 +271,13 @@ function renderMatch() {
   document.getElementById('col-away-name').textContent = state.away;
   document.getElementById('fab-home-label').textContent = state.home;
   document.getElementById('fab-away-label').textContent = state.away;
+
+  document.documentElement.style.setProperty('--home-color', state.homeColor);
+  document.documentElement.style.setProperty('--away-color', state.awayColor);
+  document.documentElement.style.setProperty('--home-ink', readableTextColor(state.homeColor));
+  document.documentElement.style.setProperty('--away-ink', readableTextColor(state.awayColor));
+  document.getElementById('crest-disp-home').innerHTML = crestHtml(state.home, state.homeColor, state.homeLogo, 34);
+  document.getElementById('crest-disp-away').innerHTML = crestHtml(state.away, state.awayColor, state.awayLogo, 34);
 
   document.getElementById('score-home').textContent = state.scoreHome;
   document.getElementById('score-away').textContent = state.scoreAway;
@@ -526,8 +545,8 @@ function exportMatch() {
     const homeRows = events.filter(e => e.team === 'home').map(eventRow).join('');
     const awayRows = events.filter(e => e.team === 'away').map(eventRow).join('');
     return `
-      <tr class="team-header"><td colspan="2">${escapeHtml(state.home)}</td></tr>${homeRows}
-      <tr class="team-header"><td colspan="2">${escapeHtml(state.away)}</td></tr>${awayRows}
+      <tr class="team-header home"><td colspan="2">${escapeHtml(state.home)}</td></tr>${homeRows}
+      <tr class="team-header away"><td colspan="2">${escapeHtml(state.away)}</td></tr>${awayRows}
     `;
   }
 
@@ -543,13 +562,17 @@ function exportMatch() {
     h1{font-size:22px;color:#0f4225;margin-bottom:4px}
     .meta{font-size:12px;color:#666;letter-spacing:1px;text-transform:uppercase;margin-bottom:20px}
     .score-box{background:#0f4225;color:#fff;border-radius:12px;padding:20px;text-align:center;margin-bottom:24px}
-    .score-teams{display:flex;justify-content:space-between;font-size:16px;font-weight:700;margin-bottom:8px}
+    .score-teams{display:flex;justify-content:space-between;gap:12px;font-size:16px;font-weight:700;margin-bottom:8px}
+    .score-team{display:flex;align-items:center;gap:8px}
+    .crest{flex-shrink:0}
     .score-nums{font-size:40px;font-weight:700;letter-spacing:4px}
     h2{font-size:14px;text-transform:uppercase;letter-spacing:2px;color:#0f4225;margin:20px 0 8px;border-bottom:1px solid #ddd;padding-bottom:4px}
     table{width:100%;border-collapse:collapse;font-size:13px;margin-bottom:16px}
     td{padding:6px 8px;border-bottom:1px solid #eee}
     td:first-child{color:#888;font-style:italic;width:48px;white-space:nowrap}
     .team-header td{font-weight:700;color:#0f4225;background:#f0f7f3;font-size:12px;text-transform:uppercase;letter-spacing:1px}
+    .team-header.home td{border-left:6px solid ${state.homeColor}}
+    .team-header.away td{border-left:6px solid ${state.awayColor}}
     .added{font-size:12px;color:#666;margin-bottom:16px}
     .actions{margin-top:32px;display:flex;gap:12px}
     button{padding:10px 20px;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit}
@@ -561,7 +584,7 @@ function exportMatch() {
   <h1>${tr('exportTitle')}</h1>
   <div class="meta">${date}${state.referee && state.referee !== '—' ? ' &nbsp;·&nbsp; ' + tr('refPrefix') + ': ' + escapeHtml(state.referee) : ''}${state.category && state.category !== '—' ? ' &nbsp;·&nbsp; ' + escapeHtml(categoryLabel(state.category, currentLang)) : ''}</div>
   <div class="score-box">
-    <div class="score-teams"><span>${escapeHtml(state.home)}</span><span>${escapeHtml(state.away)}</span></div>
+    <div class="score-teams"><span class="score-team">${crestHtml(state.home, state.homeColor, state.homeLogo, 28)}${escapeHtml(state.home)}</span><span class="score-team">${escapeHtml(state.away)}${crestHtml(state.away, state.awayColor, state.awayLogo, 28)}</span></div>
     <div class="score-nums">${state.scoreHome} – ${state.scoreAway}</div>
   </div>
   ${addedInfo ? `<div class="added">${tr('exportAddedTime')}: ${addedInfo}</div>` : ''}

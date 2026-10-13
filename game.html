@@ -28,13 +28,19 @@
     </div>
     <div class="match-meta" id="match-meta-text">—</div>
     <div class="scoreboard">
-      <div class="team-name home" id="disp-home">Home</div>
+      <div class="team-name home">
+        <span class="team-crest" id="crest-disp-home"></span>
+        <span id="disp-home">Home</span>
+      </div>
       <div class="score-display">
         <div class="score-num" id="score-home">0</div>
         <div class="score-sep">–</div>
         <div class="score-num" id="score-away">0</div>
       </div>
-      <div class="team-name away" id="disp-away">Away</div>
+      <div class="team-name away">
+        <span class="team-crest" id="crest-disp-away"></span>
+        <span id="disp-away">Away</span>
+      </div>
     </div>
   </div>
 
@@ -59,11 +65,11 @@
 
   <div class="pitch-area">
     <div class="team-col home">
-      <div class="team-col-header" id="col-home-name">Home</div>
+      <div class="team-col-header"><span id="col-home-name">Home</span></div>
       <div class="events-list" id="events-home"></div>
     </div>
     <div class="team-col away">
-      <div class="team-col-header" id="col-away-name">Away</div>
+      <div class="team-col-header"><span id="col-away-name">Away</span></div>
       <div class="events-list" id="events-away"></div>
     </div>
   </div>
@@ -169,6 +175,7 @@
 </div>
 
 <script src="js/storage.js"></script>
+<script src="js/teams.js"></script>
 <script src="js/game.js"></script>
 <script>
   if ('serviceWorker' in navigator) {

@@ -197,9 +197,11 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
   display: grid; grid-template-columns: 1fr auto 1fr;
   align-items: center; gap: 8px;
 }
-.team-name { font-size: 15px; font-weight: 700; line-height: 1.2; }
+.team-name { font-size: 15px; font-weight: 700; line-height: 1.2; display: flex; align-items: center; gap: 8px; min-width: 0; }
 .team-name.home { text-align: left; }
-.team-name.away { text-align: right; }
+.team-name.away { text-align: right; flex-direction: row-reverse; }
+.team-crest { display: inline-flex; flex-shrink: 0; }
+.crest { display: block; flex-shrink: 0; object-fit: contain; }
 .score-display {
   background: rgba(255,255,255,0.12);
   border-radius: 10px; padding: 8px 16px;
@@ -292,6 +294,8 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
   color: var(--muted); margin-bottom: 10px;
 }
 .team-col.away .team-col-header { text-align: right; }
+.team-col.home .team-col-header { border-bottom: 3px solid var(--home-color, var(--green)); padding-bottom: 6px; }
+.team-col.away .team-col-header { border-bottom: 3px solid var(--away-color, var(--green-dark)); padding-bottom: 6px; }
 
 .events-list { display: flex; flex-direction: column; gap: 6px; }
 
@@ -357,7 +361,8 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
   transition: transform 0.15s, background 0.15s;
 }
 .fab:active { transform: scale(0.93); }
-.fab.away-fab { background: var(--green-dark); }
+.fab.home-fab { background: var(--home-color, var(--green)); color: var(--home-ink, #fff); }
+.fab.away-fab { background: var(--away-color, var(--green-dark)); color: var(--away-ink, #fff); }
 .fab-label {
   position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%);
   font-size: 9px; font-family: 'Helvetica Neue', sans-serif;
@@ -628,3 +633,39 @@ body { font-family: 'Georgia', serif; background: var(--off-white); color: var(-
 .history-empty {
   padding: 2.2rem 1rem;
 }
+
+/* TEAM PICKER (setup) */
+.team-field { position: relative; }
+.combo { position: relative; display: flex; align-items: center; }
+.combo-crest { position: absolute; left: 8px; display: inline-flex; pointer-events: none; }
+.combo input { padding-left: 48px; }
+.combo-list {
+  position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 50;
+  max-height: 260px; overflow-y: auto; margin: 0; padding: 4px; list-style: none;
+  background: var(--white); border: 1.5px solid var(--border); border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+}
+.combo-list[hidden] { display: none; }
+.combo-option { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: 8px; cursor: pointer; min-height: 44px; }
+.combo-option.active, .combo-option:hover { background: #e8f4ed; }
+.combo-name { flex: 1; min-width: 0; font-size: 14px; }
+.combo-meta { font-size: 10px; font-family: 'Helvetica Neue', sans-serif; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); text-align: right; }
+.combo-empty { padding: 10px; font-size: 12px; font-style: italic; color: var(--muted); }
+.color-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.color-label { font-size: 10px; font-family: 'Helvetica Neue', sans-serif; text-transform: uppercase; letter-spacing: 1.2px; color: var(--muted); }
+.swatches { display: flex; gap: 6px; flex-wrap: wrap; }
+.swatch {
+  width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--white);
+  background: var(--swatch); box-shadow: 0 0 0 1px rgba(0,0,0,0.25); cursor: pointer; padding: 0;
+}
+.swatch.selected { box-shadow: 0 0 0 2px var(--green-dark); transform: scale(1.1); }
+.swatch:focus-visible, .color-input:focus-visible { outline: 2px solid var(--green); outline-offset: 2px; }
+.form-group .color-input { width: 36px; height: 30px; padding: 0; border: 1.5px solid var(--border); border-radius: 8px; background: var(--off-white); cursor: pointer; }
+.color-warning { margin: 6px 0 0; font-size: 12px; font-family: 'Helvetica Neue', sans-serif; color: var(--muted); }
+.color-warning.is-warning { color: #a12622; font-weight: 600; }
+.color-warning[hidden] { display: none; }
+
+/* EVENT ACCENT BY TEAM COLOUR */
+.event-item { border-left: 4px solid var(--home-color, transparent); }
+.event-item.away { border-left: 0; border-right: 4px solid var(--away-color, transparent); }
+.fab-label { max-width: 96px; overflow: hidden; text-overflow: ellipsis; }
