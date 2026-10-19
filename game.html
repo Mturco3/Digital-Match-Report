@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Digital Match Report - Game</title>
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#0f4225" />
@@ -42,24 +42,33 @@
         <span id="disp-away">Away</span>
       </div>
     </div>
+    <div class="half-indicator" id="half-indicator" aria-live="polite"></div>
   </div>
 
   <div class="match-summary-wrap">
-    <div class="summary-row">
-      <label class="summary-label" id="lbl-added-first">Recupero primo tempo</label>
-      <input type="number" min="0" max="30" id="summary-added-first" class="summary-input" />
+    <div class="stat-card">
+      <label class="summary-label" id="lbl-added-first" for="summary-added-first">Recupero primo tempo</label>
+      <div class="stat-control">
+        <span class="stat-plus" aria-hidden="true">+</span>
+        <input type="number" min="0" max="30" id="summary-added-first" class="summary-input" inputmode="numeric" />
+        <span class="stat-unit" aria-hidden="true">min</span>
+      </div>
     </div>
-    <div class="summary-row">
-      <label class="summary-label" id="lbl-added-second">Recupero secondo tempo</label>
-      <input type="number" min="0" max="30" id="summary-added-second" class="summary-input" />
+    <div class="stat-card">
+      <label class="summary-label" id="lbl-added-second" for="summary-added-second">Recupero secondo tempo</label>
+      <div class="stat-control">
+        <span class="stat-plus" aria-hidden="true">+</span>
+        <input type="number" min="0" max="30" id="summary-added-second" class="summary-input" inputmode="numeric" />
+        <span class="stat-unit" aria-hidden="true">min</span>
+      </div>
     </div>
-    <div class="summary-row total-row">
+    <div class="stat-card team-home">
       <span class="summary-label" id="lbl-subs-home">Totale cambi casa</span>
-      <strong id="summary-subs-home">0</strong>
+      <strong class="stat-value" id="summary-subs-home">0</strong>
     </div>
-    <div class="summary-row total-row">
+    <div class="stat-card team-away">
       <span class="summary-label" id="lbl-subs-away">Totale cambi ospiti</span>
-      <strong id="summary-subs-away">0</strong>
+      <strong class="stat-value" id="summary-subs-away">0</strong>
     </div>
   </div>
 
@@ -77,12 +86,12 @@
   <div class="fab-spacer"></div>
 
   <div class="fab-container">
-    <div class="fab-group">
-      <button class="fab home-fab" id="home-fab">+</button>
+    <div class="fab-group home">
+      <button class="fab home-fab" id="home-fab" type="button" aria-labelledby="fab-home-label">+</button>
       <span class="fab-label" id="fab-home-label">Home</span>
     </div>
-    <div class="fab-group">
-      <button class="fab away-fab" id="away-fab">+</button>
+    <div class="fab-group away">
+      <button class="fab away-fab" id="away-fab" type="button" aria-labelledby="fab-away-label">+</button>
       <span class="fab-label" id="fab-away-label">Away</span>
     </div>
   </div>
@@ -95,15 +104,15 @@
 
     <div class="event-type-grid">
       <div class="type-btn selected" data-type="card" id="type-card">
-        <div class="type-icon">🟨</div>
+        <div class="type-icon type-card"><svg viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="2" width="10" height="16" rx="2" fill="#f5c518"/></svg></div>
         <div class="type-label" id="lbl-type-card">Cartellino</div>
       </div>
       <div class="type-btn" data-type="goal" id="type-goal">
-        <div class="type-icon">⚽</div>
+        <div class="type-icon type-goal"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.5l3.8 2.8-1.5 4.4H9.7l-1.5-4.4z" fill="currentColor"/></svg></div>
         <div class="type-label" id="lbl-type-goal">Goal</div>
       </div>
       <div class="type-btn" data-type="sub" id="type-sub">
-        <div class="type-icon">🔄</div>
+        <div class="type-icon type-sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 19V6m0 0L4.5 9.5M8 6l3.5 3.5M16 5v13m0 0l-3.5-3.5M16 18l3.5-3.5"/></svg></div>
         <div class="type-label" id="lbl-type-sub">Sostituzione</div>
       </div>
     </div>

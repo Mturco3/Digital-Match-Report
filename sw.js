@@ -1,4 +1,4 @@
-const CACHE_NAME = 'match-report-v10';
+const CACHE_NAME = 'match-report-v11';
 const ASSETS = [
   './',
   './index.html',

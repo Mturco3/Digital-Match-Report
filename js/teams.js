@@ -86,7 +86,7 @@ function crestHtml(name, color, logo, size) {
     return `<img class="crest" src="${escapeHtml(logo)}" alt="${safeName}" width="${size}" height="${size}" />`;
   }
   const text = readableTextColor(fill);
-  const initials = escapeHtml(teamInitials(name));
+  const initials = String(name || '').trim() ? escapeHtml(teamInitials(name)) : '';
   return `<svg class="crest" width="${size}" height="${size}" viewBox="0 0 40 40" role="img" aria-label="${safeName}">` +
     `<circle cx="20" cy="20" r="18.5" fill="${fill}" stroke="rgba(255,255,255,0.85)" stroke-width="2"/>` +
     `<text x="20" y="25.5" text-anchor="middle" font-size="16" font-weight="700" font-family="Helvetica Neue, Arial, sans-serif" fill="${text}">${initials}</text>` +

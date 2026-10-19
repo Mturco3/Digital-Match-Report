@@ -28,6 +28,8 @@ const TEXT = {
     goal: 'Goal',
     refPrefix: 'Arb',
     noEvents: 'Nessun evento',
+    noEventsHint: 'Tocca il pulsante della squadra per aggiungerne uno.',
+    deleteEvent: 'Elimina evento',
     addedFirst: 'Recupero primo tempo',
     addedSecond: 'Recupero secondo tempo',
     totalSubsHome: 'Totale cambi casa',
@@ -80,6 +82,8 @@ const TEXT = {
     goal: 'Goal',
     refPrefix: 'Ref',
     noEvents: 'No events yet',
+    noEventsHint: "Tap the team's button to add one.",
+    deleteEvent: 'Delete event',
     addedFirst: 'Added time first half',
     addedSecond: 'Added time second half',
     totalSubsHome: 'Total home subs',
@@ -103,6 +107,13 @@ const TEXT = {
     secondYellowBadge: '2nd yellow',
     redSecondYellow: 'Red for second yellow'
   }
+};
+
+const EVENT_ICONS = {
+  card: '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="5" y="2" width="10" height="16" rx="2" fill="currentColor"/></svg>',
+  secondYellow: '<svg viewBox="0 0 20 20" aria-hidden="true"><rect x="2.5" y="3" width="9.5" height="14" rx="2" fill="#f5c518"/><rect x="8" y="2" width="9.5" height="14" rx="2" fill="#e03030" stroke="#fff" stroke-width="1"/></svg>',
+  goal: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 7.5l3.8 2.8-1.5 4.4H9.7l-1.5-4.4z" fill="currentColor"/></svg>',
+  sub: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 19V6m0 0L4.5 9.5M8 6l3.5 3.5M16 5v13m0 0l-3.5-3.5M16 18l3.5-3.5"/></svg>'
 };
 
 let currentLang = localStorage.getItem(LANG_KEY) || 'it';
@@ -276,9 +287,10 @@ function renderMatch() {
   document.documentElement.style.setProperty('--away-color', state.awayColor);
   document.documentElement.style.setProperty('--home-ink', readableTextColor(state.homeColor));
   document.documentElement.style.setProperty('--away-ink', readableTextColor(state.awayColor));
-  document.getElementById('crest-disp-home').innerHTML = crestHtml(state.home, state.homeColor, state.homeLogo, 34);
-  document.getElementById('crest-disp-away').innerHTML = crestHtml(state.away, state.awayColor, state.awayLogo, 34);
+  document.getElementById('crest-disp-home').innerHTML = crestHtml(state.home, state.homeColor, state.homeLogo, 44);
+  document.getElementById('crest-disp-away').innerHTML = crestHtml(state.away, state.awayColor, state.awayLogo, 44);
 
+  document.getElementById('half-indicator').textContent = state.half === 2 ? tr('secondHalf') : tr('firstHalf');
   document.getElementById('score-home').textContent = state.scoreHome;
   document.getElementById('score-away').textContent = state.scoreAway;
 
@@ -435,24 +447,25 @@ function createEventNode(event, originalIndex, secondYellows) {
 
   if (event.type === 'card') {
     iconClass = event.cardType;
-    iconText = event.cardType === 'yellow' ? 'Y' : 'R';
+    iconText = EVENT_ICONS.card;
     playerText = '#' + event.player;
     detailText = event.cardType === 'yellow' ? tr('yellowCard') : tr('redCard');
     minuteText = `${event.minute}'`;
     if (event.cardType === 'yellow' && secondYellows.has(event)) {
       iconClass += ' second';
+      iconText = EVENT_ICONS.secondYellow;
       badgeText = tr('secondYellowBadge');
     } else if (event.cardType === 'red' && event.secondYellow && hasSecondYellow(event.team, event.player)) {
       detailText = tr('redSecondYellow');
     }
   } else if (event.type === 'goal') {
     iconClass = 'goal';
-    iconText = '⚽';
+    iconText = EVENT_ICONS.goal;
     playerText = tr('goal');
     minuteText = `${event.minute}'`;
   } else if (event.type === 'sub') {
     iconClass = 'sub';
-    iconText = '↕';
+    iconText = EVENT_ICONS.sub;
     playerText = `↑ #${event.playerIn}`;
     detailText = `↓ #${event.playerOut}`;
     minuteText = `${event.minute}'`;
@@ -466,7 +479,7 @@ function createEventNode(event, originalIndex, secondYellows) {
       ${badgeText ? `<div class="event-badge">${badgeText}</div>` : ''}
     </div>
     ${minuteText ? `<div class="event-min">${minuteText}</div>` : ''}
-    <button class="event-delete-btn" data-index="${originalIndex}" aria-label="Delete event">×</button>
+    <button class="event-delete-btn" data-index="${originalIndex}" aria-label="${tr('deleteEvent')}">×</button>
   `;
 
   return node;
@@ -493,7 +506,7 @@ function renderEventsForList(listId, indexedEvents, secondYellows) {
   if (!firstHalf.length && !secondHalf.length) {
     const empty = document.createElement('div');
     empty.className = 'empty-state';
-    empty.textContent = tr('noEvents');
+    empty.innerHTML = `<strong>${escapeHtml(tr('noEvents'))}</strong><span>${escapeHtml(tr('noEventsHint'))}</span>`;
     list.appendChild(empty);
   }
 }

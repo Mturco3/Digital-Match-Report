@@ -7,6 +7,9 @@ const TEXT = {
     homeNewGame: 'Nuova partita',
     homeHistory: 'Partite salvate',
     setupSubtitle: 'Scheda gara',
+    secOfficials: 'Ufficiali di gara',
+    secTeams: 'Squadre',
+    secCompetition: 'Competizione',
     lblReferee: 'Arbitro',
     lblSupervisor: 'Osservatore',
     lblHome: 'Squadra casa',
@@ -39,6 +42,9 @@ const TEXT = {
     homeNewGame: 'New game',
     homeHistory: 'Past games',
     setupSubtitle: 'Match setup',
+    secOfficials: 'Match officials',
+    secTeams: 'Teams',
+    secCompetition: 'Competition',
     lblReferee: 'Referee',
     lblSupervisor: 'Supervisor',
     lblHome: 'Home team',
@@ -149,6 +155,9 @@ function applyLanguage() {
   document.getElementById('go-new-game-btn').textContent = tr('homeNewGame');
   document.getElementById('go-history-btn').textContent = tr('homeHistory');
   document.getElementById('setup-subtitle').textContent = tr('setupSubtitle');
+  document.getElementById('sec-officials').textContent = tr('secOfficials');
+  document.getElementById('sec-teams').textContent = tr('secTeams');
+  document.getElementById('sec-competition').textContent = tr('secCompetition');
   document.getElementById('lbl-referee').textContent = tr('lblReferee');
   document.getElementById('lbl-supervisor').textContent = tr('lblSupervisor');
   document.getElementById('lbl-home').textContent = tr('lblHome');
