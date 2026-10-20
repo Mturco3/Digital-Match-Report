@@ -87,6 +87,11 @@
     </div>
   </div>
 
+  <section class="notes-area is-hidden" id="notes-area" aria-labelledby="notes-title">
+    <h2 class="notes-title" id="notes-title">Osservazioni sull'arbitro</h2>
+    <div class="notes-list" id="notes-list"></div>
+  </section>
+
   <div class="fab-spacer"></div>
 
   <div class="fab-container">
@@ -119,6 +124,10 @@
         <div class="type-icon type-sub"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 19V6m0 0L4.5 9.5M8 6l3.5 3.5M16 5v13m0 0l-3.5-3.5M16 18l3.5-3.5"/></svg></div>
         <div class="type-label" id="lbl-type-sub">Sostituzione</div>
       </div>
+      <div class="type-btn" data-type="note" id="type-note">
+        <div class="type-icon type-note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 3.5h14v13l-4.5 4H5z"/><path d="M14.5 20.5v-4H19M8.5 8.5h7M8.5 12h7"/></svg></div>
+        <div class="type-label" id="lbl-type-note">Nota</div>
+      </div>
     </div>
 
     <div class="section-divider"></div>
@@ -144,6 +153,10 @@
         <label id="lbl-minute-card">Minuto</label>
         <input type="number" id="f-card-min" placeholder="es. 34" min="1" max="120" />
       </div>
+      <div class="modal-field">
+        <label id="lbl-card-note" for="f-card-note">Nota (facoltativa)</label>
+        <textarea id="f-card-note" rows="2" maxlength="300"></textarea>
+      </div>
     </div>
 
     <div class="modal-fields is-hidden" id="fields-goal">
@@ -165,6 +178,26 @@
       <div class="modal-field">
         <label id="lbl-minute-sub">Minuto</label>
         <input type="number" id="f-sub-min" placeholder="es. 55" min="1" max="120" />
+      </div>
+    </div>
+
+    <div class="modal-fields is-hidden" id="fields-note">
+      <div class="modal-field">
+        <label id="lbl-note-area">Area</label>
+        <div class="area-row" id="area-row">
+          <div class="area-btn selected" data-area="athletic" id="area-athletic">Atletica</div>
+          <div class="area-btn" data-area="technical" id="area-technical">Tecnica</div>
+          <div class="area-btn" data-area="tactical" id="area-tactical">Tattica</div>
+          <div class="area-btn" data-area="attitude" id="area-attitude">Comportamento</div>
+        </div>
+      </div>
+      <div class="modal-field">
+        <label id="lbl-note-text" for="f-note-text">Nota sull'arbitro</label>
+        <textarea id="f-note-text" rows="3" maxlength="300"></textarea>
+      </div>
+      <div class="modal-field">
+        <label id="lbl-minute-note" for="f-note-min">Minuto</label>
+        <input type="number" id="f-note-min" placeholder="es. 34" min="1" max="120" />
       </div>
     </div>
 

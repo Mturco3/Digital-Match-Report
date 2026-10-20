@@ -22,6 +22,18 @@ const TEXT = {
     alertCard: 'Inserisci numero e minuto.',
     alertGoal: 'Inserisci il minuto.',
     alertSub: 'Compila tutti i campi della sostituzione.',
+    typeNote: 'Nota',
+    lblCardNote: 'Nota (facoltativa)',
+    lblNoteArea: 'Area',
+    areaAthletic: 'Atletica',
+    areaTechnical: 'Tecnica',
+    areaTactical: 'Tattica',
+    areaAttitude: 'Comportamento',
+    lblNoteText: "Nota sull'arbitro",
+    alertNote: 'Scrivi la nota e indica il minuto.',
+    addNoteTitle: 'Aggiungi osservazione',
+    notesTitle: "Osservazioni sull'arbitro",
+    exportNotes: "Osservazioni sull'arbitro",
     alertNoGame: 'Nessuna partita attiva trovata.',
     yellowCard: 'Cartellino giallo',
     redCard: 'Cartellino rosso',
@@ -83,6 +95,18 @@ const TEXT = {
     alertCard: 'Enter shirt number and minute.',
     alertGoal: 'Enter the minute.',
     alertSub: 'Fill all substitution fields.',
+    typeNote: 'Note',
+    lblCardNote: 'Note (optional)',
+    lblNoteArea: 'Area',
+    areaAthletic: 'Athletic',
+    areaTechnical: 'Technical',
+    areaTactical: 'Tactical',
+    areaAttitude: 'Attitude',
+    lblNoteText: 'Note on the referee',
+    alertNote: 'Write the note and enter the minute.',
+    addNoteTitle: 'Add observation',
+    notesTitle: 'Referee observations',
+    exportNotes: 'Referee observations',
     alertNoGame: 'No active game found.',
     yellowCard: 'Yellow card',
     redCard: 'Red card',
@@ -247,6 +271,15 @@ function applyLanguage() {
   document.getElementById('lbl-type-goal').textContent = tr('typeGoal');
   document.getElementById('lbl-type-sub').textContent = tr('typeSub');
   document.getElementById('lbl-card-type').textContent = tr('lblCardType');
+  document.getElementById('lbl-type-note').textContent = tr('typeNote');
+  document.getElementById('lbl-card-note').textContent = tr('lblCardNote');
+  document.getElementById('lbl-note-area').textContent = tr('lblNoteArea');
+  document.getElementById('lbl-note-text').textContent = tr('lblNoteText');
+  document.getElementById('lbl-minute-note').textContent = tr('lblMinute');
+  AREA_KEYS.forEach(area => {
+    document.getElementById('area-' + area).textContent = areaLabel(area);
+  });
+  document.getElementById('notes-title').textContent = tr('notesTitle');
   document.getElementById('lbl-event-half').textContent = tr('lblEventHalf');
   document.getElementById('lbl-card-number').textContent = tr('lblCardNumber');
   document.getElementById('lbl-minute-card').textContent = tr('lblMinute');
@@ -269,7 +302,7 @@ function applyLanguage() {
 
   const modal = document.getElementById('event-modal');
   if (modal && modal.classList.contains('open') && state) {
-    document.getElementById('modal-title').textContent = `${tr('addEvent')} – ${state.currentTeam === 'home' ? state.home : state.away}`;
+    document.getElementById('modal-title').textContent = modalTitle();
   }
 
   renderMatch();
@@ -321,11 +354,30 @@ function renderMatch() {
   renderAllEvents();
 }
 
+const AREA_KEYS = ['athletic', 'technical', 'tactical', 'attitude'];
+
+function areaLabel(area) {
+  return tr('area' + area[0].toUpperCase() + area.slice(1));
+}
+
+function modalTitle() {
+  if (state.currentType === 'note') return tr('addNoteTitle');
+  return `${tr('addEvent')} – ${state.currentTeam === 'home' ? state.home : state.away}`;
+}
+
 function selectType(type) {
   state.currentType = type;
-  ['card', 'goal', 'sub'].forEach(t => {
+  ['card', 'goal', 'sub', 'note'].forEach(t => {
     document.getElementById('type-' + t).classList.toggle('selected', t === type);
     document.getElementById('fields-' + t).classList.toggle('is-hidden', t !== type);
+  });
+  document.getElementById('modal-title').textContent = modalTitle();
+}
+
+function selectArea(area) {
+  state.currentArea = area;
+  AREA_KEYS.forEach(key => {
+    document.getElementById('area-' + key).classList.toggle('selected', key === area);
   });
 }
 
@@ -337,11 +389,11 @@ function selectCardType(type) {
 
 function openModal(team) {
   state.currentTeam = team;
-  document.getElementById('modal-title').textContent = `${tr('addEvent')} – ${team === 'home' ? state.home : state.away}`;
   selectType('card');
   selectCardType('yellow');
+  selectArea('athletic');
 
-  ['f-card-player', 'f-card-min', 'f-goal-min', 'f-sub-out', 'f-sub-in', 'f-sub-min'].forEach(id => {
+  ['f-card-player', 'f-card-min', 'f-card-note', 'f-goal-min', 'f-sub-out', 'f-sub-in', 'f-sub-min', 'f-note-text', 'f-note-min'].forEach(id => {
     const element = document.getElementById(id);
     if (element) element.value = '';
   });
@@ -421,6 +473,7 @@ function openSecondYellowWarning(yellowEvent, previousYellow) {
     .replace('{minute}', previousYellow.minute);
   openWarning(tr('warnSecondYellowTitle'), text, tr('warnConfirm'), () => {
     const red = { ...yellowEvent, cardType: 'red', secondYellow: true };
+    delete red.note;
     commitEvents([yellowEvent, red], yellowEvent.half);
   });
 }
@@ -447,7 +500,7 @@ function warnIfSentOff(event, player, messageKey) {
 
 function saveEvent() {
   const half = parseInt(document.getElementById('f-event-half').value, 10) || 1;
-  const event = { team: state.currentTeam, type: state.currentType, half };
+  const event = { team: state.currentType === 'note' ? null : state.currentTeam, type: state.currentType, half };
 
   if (event.type === 'card') {
     const playerRaw = parseInt(document.getElementById('f-card-player').value, 10);
@@ -456,6 +509,8 @@ function saveEvent() {
     event.player = String(playerRaw);
     event.cardType = state.currentCardType;
     event.minute = minuteRaw;
+    const cardNote = document.getElementById('f-card-note').value.trim();
+    if (cardNote) event.note = cardNote;
     if (warnIfSentOff(event, event.player, 'warnSentOffCard')) return;
     if (event.cardType === 'yellow') {
       const previous = yellowEventsFor(event.team, event.player)[0];
@@ -477,6 +532,13 @@ function saveEvent() {
     event.minute = minuteRaw;
     if (warnIfSentOff(event, event.playerOut, 'warnSentOffSubOut')) return;
     if (warnIfSentOff(event, event.playerIn, 'warnSentOffSubIn')) return;
+  } else if (event.type === 'note') {
+    const minuteRaw = parseInt(document.getElementById('f-note-min').value, 10);
+    const text = document.getElementById('f-note-text').value.trim();
+    if (!text || isNaN(minuteRaw) || minuteRaw < 1 || minuteRaw > 120) return alert(tr('alertNote'));
+    event.area = state.currentArea;
+    event.note = text;
+    event.minute = minuteRaw;
   }
 
   commitEvents([event], half);
@@ -525,6 +587,7 @@ function createEventNode(event, originalIndex, secondYellows) {
       <div class="event-player">${playerText}</div>
       ${detailText ? `<div class="event-detail">${detailText}</div>` : ''}
       ${badgeText ? `<div class="event-badge">${badgeText}</div>` : ''}
+      ${event.note ? `<div class="event-note">${escapeHtml(event.note)}</div>` : ''}
     </div>
     ${minuteText ? `<div class="event-min">${minuteText}</div>` : ''}
     <button class="event-delete-btn" data-index="${originalIndex}" aria-label="${tr('deleteEvent')}">×</button>
@@ -560,11 +623,40 @@ function renderEventsForList(listId, indexedEvents, secondYellows) {
   }
 }
 
+function createNoteNode(event, originalIndex) {
+  const node = document.createElement('div');
+  node.className = 'note-item';
+  node.innerHTML = `
+    <div class="note-main">
+      <span class="note-area">${escapeHtml(areaLabel(event.area))}</span>
+      <span class="note-text">${escapeHtml(event.note)}</span>
+    </div>
+    <div class="event-min">${event.half}T ${event.minute}'</div>
+    <button class="event-delete-btn" data-index="${originalIndex}" aria-label="${tr('deleteEvent')}">×</button>
+  `;
+  return node;
+}
+
+function noteEvents() {
+  return state.events
+    .map((event, index) => ({ event, index }))
+    .filter(({ event }) => event.type === 'note' && AREA_KEYS.includes(event.area));
+}
+
+function renderNotes() {
+  const notes = noteEvents().sort((a, b) => eventOrderKey(b.event, b.index) - eventOrderKey(a.event, a.index));
+  const list = document.getElementById('notes-list');
+  list.innerHTML = '';
+  notes.forEach(({ event, index }) => list.appendChild(createNoteNode(event, index)));
+  document.getElementById('notes-area').classList.toggle('is-hidden', !notes.length);
+}
+
 function renderAllEvents() {
   const indexed = state.events.map((event, index) => ({ event, index }));
   const secondYellows = secondYellowEvents();
   renderEventsForList('events-home', indexed.filter(({ event }) => event.team === 'home'), secondYellows);
   renderEventsForList('events-away', indexed.filter(({ event }) => event.team === 'away'), secondYellows);
+  renderNotes();
 }
 
 function deleteEvent(index) {
@@ -598,7 +690,17 @@ function exportMatch() {
     } else if (event.type === 'sub') {
       desc = `↑ #${event.playerIn} / ↓ #${event.playerOut}`;
     }
-    return `<tr><td>${event.minute}'</td><td>${desc}</td></tr>`;
+    const note = event.note ? `<div class="ev-note">${escapeHtml(event.note)}</div>` : '';
+    return `<tr><td>${event.minute}'</td><td>${desc}${note}</td></tr>`;
+  }
+
+  function notesSection() {
+    const notes = noteEvents().sort((a, b) => eventOrderKey(a.event, a.index) - eventOrderKey(b.event, b.index));
+    if (!notes.length) return '';
+    const rows = notes.map(({ event }) => {
+      return `<tr><td>${event.half}T ${event.minute}'</td><td><strong>${escapeHtml(areaLabel(event.area))}</strong><div class="ev-note">${escapeHtml(event.note)}</div></td></tr>`;
+    }).join('');
+    return `<h2>${tr('exportNotes')}</h2><table>${rows}</table>`;
   }
 
   function halfRows(halfNum) {
@@ -635,6 +737,7 @@ function exportMatch() {
     .team-header td{font-weight:700;color:#0f4225;background:#f0f7f3;font-size:12px;text-transform:uppercase;letter-spacing:1px}
     .team-header.home td{border-left:6px solid ${state.homeColor}}
     .team-header.away td{border-left:6px solid ${state.awayColor}}
+    .ev-note{font-size:12px;color:#555;font-style:italic;margin-top:2px;white-space:pre-wrap}
     .added{font-size:12px;color:#666;margin-bottom:16px}
     .actions{margin-top:32px;display:flex;gap:12px}
     button{padding:10px 20px;border:none;border-radius:8px;font-size:14px;cursor:pointer;font-family:inherit}
@@ -654,6 +757,7 @@ function exportMatch() {
   <table>${halfRows(1)}</table>
   <h2>${tr('exportHalf2')}</h2>
   <table>${halfRows(2)}</table>
+  ${notesSection()}
   <h2>${tr('exportSubs')}</h2>
   <table>
     <tr><td>${escapeHtml(state.home)}</td><td>${subsHome}</td></tr>
@@ -714,6 +818,10 @@ function bindUI() {
 
   document.getElementById('summary-added-first').addEventListener('change', handleSummaryInput);
   document.getElementById('summary-added-second').addEventListener('change', handleSummaryInput);
+
+  AREA_KEYS.forEach(area => {
+    document.getElementById('area-' + area).addEventListener('click', () => selectArea(area));
+  });
 
   document.querySelectorAll('.stepper-btn').forEach(button => {
     button.addEventListener('click', () => stepAddedTime(button.dataset.target, button.dataset.step === 'up' ? 1 : -1));
