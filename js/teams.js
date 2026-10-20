@@ -93,17 +93,28 @@ function crestHtml(name, color, logo, size) {
     '</svg>';
 }
 
-function competitionMatches(competition, category, level) {
+function competitionMatches(competition, category, level, group) {
   if (category && competition.category !== category) return false;
   if (category && hasLevel(category) && level && competition.level !== level) return false;
+  if (group && competition.group !== group) return false;
   return true;
 }
 
-function searchTeams(teams, query, category, level, limit) {
+function groupsFor(teams, category, level) {
+  const groups = new Set();
+  teams.forEach(team => {
+    team.competitions
+      .filter(competition => competitionMatches(competition, category, level, ''))
+      .forEach(competition => groups.add(competition.group));
+  });
+  return [...groups].sort((a, b) => a.localeCompare(b, 'it'));
+}
+
+function searchTeams(teams, query, category, level, group, limit) {
   const tokens = normalizeText(query).split(' ').filter(Boolean);
   const results = [];
   teams.forEach(team => {
-    const competitions = team.competitions.filter(competition => competitionMatches(competition, category, level));
+    const competitions = team.competitions.filter(competition => competitionMatches(competition, category, level, group));
     if (!competitions.length) return;
     const haystack = normalizeText(team.name + ' ' + (Array.isArray(team.official) ? team.official.join(' ') : team.official));
     if (!tokens.every(token => haystack.includes(token))) return;

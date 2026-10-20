@@ -16,6 +16,8 @@ const TEXT = {
     lblAway: 'Squadra ospite',
     lblCategory: 'Categoria',
     lblLevel: 'Livello',
+    lblGroup: 'Girone',
+    allGroups: 'Tutti i gironi',
     placeholderFirstName: 'Nome',
     placeholderLastName: 'Cognome',
     placeholderTeam: 'Cerca o scrivi il nome',
@@ -51,6 +53,8 @@ const TEXT = {
     lblAway: 'Away team',
     lblCategory: 'Category',
     lblLevel: 'Level',
+    lblGroup: 'Group',
+    allGroups: 'All groups',
     placeholderFirstName: 'First name',
     placeholderLastName: 'Last name',
     placeholderTeam: 'Search or type a name',
@@ -164,6 +168,7 @@ function applyLanguage() {
   document.getElementById('lbl-away').textContent = tr('lblAway');
   document.getElementById('lbl-category').textContent = tr('lblCategory');
   document.getElementById('lbl-level').textContent = tr('lblLevel');
+  document.getElementById('lbl-group').textContent = tr('lblGroup');
   document.getElementById('start-match-btn').textContent = tr('start');
   document.getElementById('history-title').textContent = tr('historyTitle');
   document.getElementById('recent-title').textContent = tr('recentTitle');
@@ -194,7 +199,23 @@ function updateLevelVisibility() {
   document.getElementById('level-group').hidden = !showLevel;
   document.getElementById('category-row').classList.toggle('single', !showLevel);
   if (!showLevel) document.getElementById('inp-level').value = '';
-  refreshTeamPickers();
+  refreshGroupOptions();
+}
+
+function refreshGroupOptions() {
+  loadTeams().then(teams => {
+    const select = document.getElementById('inp-group');
+    const previous = select.value;
+    const category = document.getElementById('inp-category').value;
+    const level = hasLevel(category) ? document.getElementById('inp-level').value : '';
+    const groups = category ? groupsFor(teams, category, level) : [];
+    select.innerHTML = [`<option value="">${escapeHtml(tr('allGroups'))}</option>`]
+      .concat(groups.map(group => `<option value="${escapeHtml(group)}">${escapeHtml(tr('group') + ' ' + group)}</option>`))
+      .join('');
+    select.value = groups.includes(previous) ? previous : '';
+    document.getElementById('group-group').hidden = !groups.length;
+    refreshTeamPickers();
+  });
 }
 
 function readFormName(prefix) {
@@ -375,7 +396,8 @@ function bindUI() {
   document.getElementById('back-home-from-setup-btn').addEventListener('click', () => switchScreen('home-screen'));
   document.getElementById('back-home-from-history-btn').addEventListener('click', () => switchScreen('home-screen'));
   document.getElementById('inp-category').addEventListener('change', updateLevelVisibility);
-  document.getElementById('inp-level').addEventListener('change', refreshTeamPickers);
+  document.getElementById('inp-level').addEventListener('change', refreshGroupOptions);
+  document.getElementById('inp-group').addEventListener('change', refreshTeamPickers);
   document.getElementById('start-match-btn').addEventListener('click', startGame);
   document.getElementById('history-list').addEventListener('click', handleHistoryClick);
   document.getElementById('recent-list').addEventListener('click', handleRecentClick);

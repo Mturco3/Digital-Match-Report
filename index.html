@@ -78,6 +78,21 @@
         <input type="text" id="inp-supervisor-last" autocomplete="off" />
       </div>
     </div>
+    <h2 class="form-section-title" id="sec-competition">Competizione</h2>
+    <div class="form-row" id="category-row">
+      <div class="form-group">
+        <div class="field-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 20h8"/></svg><label id="lbl-category" for="inp-category">Categoria</label></div>
+        <select id="inp-category"></select>
+      </div>
+      <div class="form-group" id="level-group">
+        <div class="field-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h5v-5h5v-5h6"/></svg><label id="lbl-level" for="inp-level">Livello</label></div>
+        <select id="inp-level"></select>
+      </div>
+    </div>
+    <div class="form-group" id="group-group">
+      <div class="field-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><rect x="14" y="14" width="6" height="6" rx="1"/></svg><label id="lbl-group" for="inp-group">Girone</label></div>
+      <select id="inp-group"></select>
+    </div>
     <h2 class="form-section-title" id="sec-teams">Squadre</h2>
     <div class="form-group team-field">
       <div class="field-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6z"/></svg><label id="lbl-home" for="inp-home">Squadra casa</label></div>
@@ -106,17 +121,6 @@
         <input type="color" id="color-away" class="color-input" />
       </div>
       <p class="color-warning" id="warn-away" role="status" hidden></p>
-    </div>
-    <h2 class="form-section-title" id="sec-competition">Competizione</h2>
-    <div class="form-row" id="category-row">
-      <div class="form-group">
-        <div class="field-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 4h10v5a5 5 0 0 1-10 0zM7 6H4v1a3 3 0 0 0 3 3M17 6h3v1a3 3 0 0 1-3 3M12 14v4M8 20h8"/></svg><label id="lbl-category" for="inp-category">Categoria</label></div>
-        <select id="inp-category"></select>
-      </div>
-      <div class="form-group" id="level-group">
-        <div class="field-head"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h5v-5h5v-5h6"/></svg><label id="lbl-level" for="inp-level">Livello</label></div>
-        <select id="inp-level"></select>
-      </div>
     </div>
     <button class="btn-primary" id="start-match-btn">Inizia</button>
   </div>

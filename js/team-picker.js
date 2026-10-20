@@ -22,7 +22,8 @@ function createTeamPicker(side, otherSide, defaultColor) {
   function currentScope() {
     return {
       category: document.getElementById('inp-category').value,
-      level: document.getElementById('inp-level').value
+      level: document.getElementById('inp-level').value,
+      group: document.getElementById('inp-group').value
     };
   }
 
@@ -92,7 +93,7 @@ function createTeamPicker(side, otherSide, defaultColor) {
     }
     const scope = currentScope();
     const query = input.value.trim();
-    picker.results = searchTeams(picker.teams, query, scope.category, scope.level, PICKER_RESULT_LIMIT);
+    picker.results = searchTeams(picker.teams, query, scope.category, scope.level, scope.group, PICKER_RESULT_LIMIT);
     if (!picker.results.length) {
       list.innerHTML = query ? `<li class="combo-empty" role="presentation">${escapeHtml(tr('noTeamFound'))}</li>` : '';
     } else {
