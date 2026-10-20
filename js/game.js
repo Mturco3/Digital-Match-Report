@@ -32,6 +32,8 @@ const TEXT = {
     deleteEvent: 'Elimina evento',
     addedFirst: 'Recupero primo tempo',
     addedSecond: 'Recupero secondo tempo',
+    stepDown: 'Diminuisci di un minuto',
+    stepUp: 'Aumenta di un minuto',
     totalSubsHome: 'Totale cambi casa',
     totalSubsAway: 'Totale cambi ospiti',
     exportBtn: 'Esporta',
@@ -86,6 +88,8 @@ const TEXT = {
     deleteEvent: 'Delete event',
     addedFirst: 'Added time first half',
     addedSecond: 'Added time second half',
+    stepDown: 'Decrease by one minute',
+    stepUp: 'Increase by one minute',
     totalSubsHome: 'Total home subs',
     totalSubsAway: 'Total away subs',
     exportBtn: 'Export',
@@ -223,6 +227,9 @@ function applyLanguage() {
 
   document.getElementById('lbl-added-first').textContent = tr('addedFirst');
   document.getElementById('lbl-added-second').textContent = tr('addedSecond');
+  document.querySelectorAll('.stepper-btn').forEach(button => {
+    button.setAttribute('aria-label', tr(button.dataset.step === 'up' ? 'stepUp' : 'stepDown'));
+  });
   document.getElementById('lbl-subs-home').textContent = tr('totalSubsHome');
   document.getElementById('lbl-subs-away').textContent = tr('totalSubsAway');
 
@@ -489,10 +496,11 @@ function renderEventsForList(listId, indexedEvents, secondYellows) {
   const list = document.getElementById(listId);
   list.innerHTML = '';
 
-  const firstHalf = indexedEvents.filter(({ event }) => event.half === 1);
-  const secondHalf = indexedEvents.filter(({ event }) => event.half === 2);
+  const newestFirst = (a, b) => eventOrderKey(b.event, b.index) - eventOrderKey(a.event, a.index);
+  const firstHalf = indexedEvents.filter(({ event }) => event.half === 1).sort(newestFirst);
+  const secondHalf = indexedEvents.filter(({ event }) => event.half === 2).sort(newestFirst);
 
-  firstHalf.forEach(({ event, index }) => list.appendChild(createEventNode(event, index, secondYellows)));
+  secondHalf.forEach(({ event, index }) => list.appendChild(createEventNode(event, index, secondYellows)));
 
   if (firstHalf.length && secondHalf.length) {
     const divider = document.createElement('div');
@@ -501,7 +509,7 @@ function renderEventsForList(listId, indexedEvents, secondYellows) {
     list.appendChild(divider);
   }
 
-  secondHalf.forEach(({ event, index }) => list.appendChild(createEventNode(event, index, secondYellows)));
+  firstHalf.forEach(({ event, index }) => list.appendChild(createEventNode(event, index, secondYellows)));
 
   if (!firstHalf.length && !secondHalf.length) {
     const empty = document.createElement('div');
@@ -648,6 +656,13 @@ function handleSummaryInput(event) {
   saveState();
 }
 
+function stepAddedTime(inputId, direction) {
+  const input = document.getElementById(inputId);
+  const current = parseInt(input.value || '0', 10) || 0;
+  input.value = Math.min(30, Math.max(0, current + direction));
+  input.dispatchEvent(new Event('change'));
+}
+
 function bindUI() {
   document.getElementById('lang-it-btn').addEventListener('click', () => setLanguage('it'));
   document.getElementById('lang-en-btn').addEventListener('click', () => setLanguage('en'));
@@ -659,8 +674,12 @@ function bindUI() {
   document.getElementById('summary-added-first').addEventListener('change', handleSummaryInput);
   document.getElementById('summary-added-second').addEventListener('change', handleSummaryInput);
 
-  document.getElementById('home-fab').addEventListener('click', () => openModal('home'));
-  document.getElementById('away-fab').addEventListener('click', () => openModal('away'));
+  document.querySelectorAll('.stepper-btn').forEach(button => {
+    button.addEventListener('click', () => stepAddedTime(button.dataset.target, button.dataset.step === 'up' ? 1 : -1));
+  });
+
+  document.querySelector('.fab-group.home').addEventListener('click', () => openModal('home'));
+  document.querySelector('.fab-group.away').addEventListener('click', () => openModal('away'));
 
   document.querySelectorAll('.type-btn').forEach(button => {
     button.addEventListener('click', () => selectType(button.dataset.type));

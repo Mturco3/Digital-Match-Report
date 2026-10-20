@@ -1011,3 +1011,18 @@ input:focus-visible { outline: none; box-shadow: var(--ring); }
 .event-player { white-space: normal; overflow-wrap: anywhere; }
 .event-detail { overflow-wrap: anywhere; }
 .fab-label { white-space: normal; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-height: 1.2; overflow: hidden; }
+
+/* ---- Stop F: added-time stepper and tappable team pill ---- */
+.stepper-btn {
+  flex-shrink: 0; width: 44px; height: 44px; padding: 0;
+  font-size: 22px; font-weight: 700; line-height: 1; color: var(--green-dark);
+  background: var(--off-white); border: 1.5px solid var(--border); border-radius: 10px; cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.stepper-btn:active { transform: scale(0.94); background: var(--border); }
+.stepper-btn:focus-visible { outline: none; box-shadow: var(--ring); }
+.fab-group { cursor: pointer; }
+.stat-control:has(.stepper-btn) { display: grid; grid-template-columns: 40px minmax(0, 1fr) 40px; gap: 6px; }
+.stat-control:has(.stepper-btn) .stat-plus, .stat-control:has(.stepper-btn) .stat-unit { display: none; }
+.stat-control .stepper-btn { width: 40px; }
+.stat-control:has(.stepper-btn) .summary-input { text-align: center; padding: 0 4px; }
