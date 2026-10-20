@@ -13,7 +13,6 @@ function createTeamPicker(side, otherSide, defaultColor) {
     teamId: null,
     logo: null,
     color: defaultColor,
-    notice: '',
     results: [],
     activeIndex: -1
   };
@@ -52,9 +51,8 @@ function createTeamPicker(side, otherSide, defaultColor) {
   function renderWarning() {
     const other = teamPickers[otherSide];
     const similar = other && colorsTooSimilar(picker.color, other.color);
-    const message = similar ? tr('colorTooSimilar') : picker.notice;
-    warning.textContent = message;
-    warning.hidden = !message;
+    warning.textContent = similar ? tr('colorTooSimilar') : '';
+    warning.hidden = !similar;
     warning.classList.toggle('is-warning', Boolean(similar));
   }
 
@@ -110,9 +108,8 @@ function createTeamPicker(side, otherSide, defaultColor) {
     picker.activeIndex = -1;
   }
 
-  function setColor(color, notice) {
+  function setColor(color) {
     picker.color = color;
-    picker.notice = notice || '';
     renderAll();
     const other = teamPickers[otherSide];
     if (other) other.refreshWarning();
@@ -122,11 +119,8 @@ function createTeamPicker(side, otherSide, defaultColor) {
     input.value = team.name;
     picker.teamId = team.id;
     picker.logo = team.logo || null;
-    const wanted = isHexColor(team.color) ? team.color : picker.color;
-    const other = teamPickers[otherSide];
-    const adjusted = other ? pickDistinctColor(wanted, other.color) : wanted;
     closeList();
-    setColor(adjusted, adjusted !== wanted ? tr('colorAdjusted') : '');
+    setColor(isHexColor(team.color) ? team.color : picker.color);
   }
 
   input.addEventListener('input', () => {
@@ -175,11 +169,11 @@ function createTeamPicker(side, otherSide, defaultColor) {
 
   swatches.addEventListener('click', event => {
     const swatch = event.target.closest('.swatch');
-    if (swatch) setColor(swatch.dataset.color, '');
+    if (swatch) setColor(swatch.dataset.color);
   });
 
   colorInput.addEventListener('input', () => {
-    setColor(colorInput.value, '');
+    setColor(colorInput.value);
   });
 
   picker.refresh = function refresh() {

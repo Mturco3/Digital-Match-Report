@@ -57,13 +57,6 @@ function colorsTooSimilar(hexA, hexB) {
   return colorDistance(hexA, hexB) < MIN_COLOR_DISTANCE;
 }
 
-function pickDistinctColor(color, otherColor) {
-  if (!colorsTooSimilar(color, otherColor)) return color;
-  const candidates = COLOR_PRESETS.filter(preset => !colorsTooSimilar(preset, otherColor));
-  candidates.sort((a, b) => colorDistance(a, color) - colorDistance(b, color));
-  return candidates[0] || color;
-}
-
 function readableTextColor(hex) {
   const rgb = hexToRgb(hex);
   const luminance = (0.299 * rgb[0] + 0.587 * rgb[1] + 0.114 * rgb[2]) / 255;
