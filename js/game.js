@@ -52,6 +52,11 @@ const TEXT = {
     warnSecondYellowTitle: 'Seconda ammonizione',
     warnSecondYellow: "Il #{player} è già stato ammonito ({minute}'). Seconda ammonizione = espulsione.",
     warnConfirm: 'Conferma e registra il rosso',
+    warnSentOffTitle: 'Giocatore espulso',
+    warnSentOffCard: "Il #{player} è stato espulso al {minute}'. Non può ricevere altri cartellini. Registrare comunque?",
+    warnSentOffSubOut: "Il #{player} è stato espulso al {minute}'. Non può essere sostituito. Registrare comunque?",
+    warnSentOffSubIn: "Il #{player} è stato espulso al {minute}'. Non può entrare in campo. Registrare comunque?",
+    warnSentOffConfirm: 'Registra comunque',
     secondYellowBadge: '2° giallo',
     redSecondYellow: 'Rosso per doppia ammonizione'
   },
@@ -108,6 +113,11 @@ const TEXT = {
     warnSecondYellowTitle: 'Second yellow card',
     warnSecondYellow: "Player #{player} already has a yellow card ({minute}'). A second yellow means a sending-off.",
     warnConfirm: 'Confirm and record the red card',
+    warnSentOffTitle: 'Player sent off',
+    warnSentOffCard: "Player #{player} was sent off at {minute}'. They cannot receive another card. Record it anyway?",
+    warnSentOffSubOut: "Player #{player} was sent off at {minute}'. They cannot be substituted. Record it anyway?",
+    warnSentOffSubIn: "Player #{player} was sent off at {minute}'. They cannot come on. Record it anyway?",
+    warnSentOffConfirm: 'Record anyway',
     secondYellowBadge: '2nd yellow',
     redSecondYellow: 'Red for second yellow'
   }
@@ -383,28 +393,56 @@ function commitEvents(events, half) {
   closeModal();
 }
 
-function openSecondYellowWarning(yellowEvent, previousYellow) {
-  state.pendingYellow = yellowEvent;
-  document.getElementById('warn-title').textContent = tr('warnSecondYellowTitle');
-  document.getElementById('warn-text').textContent = tr('warnSecondYellow')
-    .replace('{player}', yellowEvent.player)
-    .replace('{minute}', previousYellow.minute);
-  document.getElementById('warn-confirm-btn').textContent = tr('warnConfirm');
+let pendingWarning = null;
+
+function openWarning(title, text, confirmLabel, onConfirm) {
+  pendingWarning = onConfirm;
+  document.getElementById('warn-title').textContent = title;
+  document.getElementById('warn-text').textContent = text;
+  document.getElementById('warn-confirm-btn').textContent = confirmLabel;
   document.getElementById('warn-cancel-btn').textContent = tr('cancel');
   document.getElementById('warn-modal').classList.add('open');
 }
 
-function closeSecondYellowWarning() {
-  state.pendingYellow = null;
+function closeWarning() {
+  pendingWarning = null;
   document.getElementById('warn-modal').classList.remove('open');
 }
 
-function confirmSecondYellow() {
-  const yellow = state.pendingYellow;
-  closeSecondYellowWarning();
-  if (!yellow) return;
-  const red = { ...yellow, cardType: 'red', secondYellow: true };
-  commitEvents([yellow, red], yellow.half);
+function confirmWarning() {
+  const action = pendingWarning;
+  closeWarning();
+  if (action) action();
+}
+
+function openSecondYellowWarning(yellowEvent, previousYellow) {
+  const text = tr('warnSecondYellow')
+    .replace('{player}', yellowEvent.player)
+    .replace('{minute}', previousYellow.minute);
+  openWarning(tr('warnSecondYellowTitle'), text, tr('warnConfirm'), () => {
+    const red = { ...yellowEvent, cardType: 'red', secondYellow: true };
+    commitEvents([yellowEvent, red], yellowEvent.half);
+  });
+}
+
+function sentOffRedFor(team, player, half, minute) {
+  const limit = half * 100000 + minute * 100;
+  return state.events.find(event => event.type === 'card'
+    && event.cardType === 'red'
+    && event.team === team
+    && event.player === player
+    && (!event.secondYellow || hasSecondYellow(team, player))
+    && event.half * 100000 + (Number(event.minute) || 0) * 100 <= limit);
+}
+
+function warnIfSentOff(event, player, messageKey) {
+  const red = sentOffRedFor(event.team, player, event.half, event.minute);
+  if (!red) return false;
+  const text = tr(messageKey)
+    .replace('{player}', player)
+    .replace('{minute}', red.minute);
+  openWarning(tr('warnSentOffTitle'), text, tr('warnSentOffConfirm'), () => commitEvents([event], event.half));
+  return true;
 }
 
 function saveEvent() {
@@ -418,6 +456,7 @@ function saveEvent() {
     event.player = String(playerRaw);
     event.cardType = state.currentCardType;
     event.minute = minuteRaw;
+    if (warnIfSentOff(event, event.player, 'warnSentOffCard')) return;
     if (event.cardType === 'yellow') {
       const previous = yellowEventsFor(event.team, event.player)[0];
       if (previous) return openSecondYellowWarning(event, previous);
@@ -436,6 +475,8 @@ function saveEvent() {
     event.playerOut = String(outRaw);
     event.playerIn = String(inRaw);
     event.minute = minuteRaw;
+    if (warnIfSentOff(event, event.playerOut, 'warnSentOffSubOut')) return;
+    if (warnIfSentOff(event, event.playerIn, 'warnSentOffSubIn')) return;
   }
 
   commitEvents([event], half);
@@ -690,8 +731,8 @@ function bindUI() {
   });
 
   document.getElementById('cancel-event-btn').addEventListener('click', closeModal);
-  document.getElementById('warn-confirm-btn').addEventListener('click', confirmSecondYellow);
-  document.getElementById('warn-cancel-btn').addEventListener('click', closeSecondYellowWarning);
+  document.getElementById('warn-confirm-btn').addEventListener('click', confirmWarning);
+  document.getElementById('warn-cancel-btn').addEventListener('click', closeWarning);
   document.getElementById('save-event-btn').addEventListener('click', saveEvent);
 
   document.getElementById('event-modal').addEventListener('click', function (event) {
