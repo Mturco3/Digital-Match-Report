@@ -2,7 +2,7 @@
 
 A mobile-first web app for football referees and referee observers. Log goals, cards, substitutions and observations as the match unfolds, then print a clean match summary. Install it on your phone, use it at the pitch, no account needed.
 
-**Live app:** https://mturco3.github.io/Digital-Match-Report/
+**Live app:** https://mturco3.github.io/digital-match-report/
 
 <p>
   <img src="Images/home.png" alt="Home screen with recent games" width="190">
@@ -71,8 +71,8 @@ Images/                        screenshots used in this README
 To run it locally, serve the folder over HTTP:
 
 ```bash
-git clone https://github.com/Mturco3/Digital-Match-Report.git
-cd Digital-Match-Report
+git clone https://github.com/Mturco3/digital-match-report.git
+cd digital-match-report
 python -m http.server 8000
 # open http://localhost:8000
 ```
